@@ -1,37 +1,36 @@
-const CACHE_NAME = "app-cache-v3";
+const CACHE_NAME = "app-cache-v4";
 
 const FILES_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./views/actividad.html",
-  "./views/control.html",
-  "./views/lista.html",
-  "./views/menu.html",
-  "./manifest.json",
+  "index.html",
+  "views/actividad.html",
+  "views/control.html",
+  "views/lista.html",
+  "views/menu.html",
+  "manifest.json",
 
-  "./css/app.css",
-  "./css/components.css",
+  "css/app.css",
+  "css/components.css",
 
-  "./js/app.js",
-  "./js/core/config.js",
-  "./js/core/date.js",
-  "./js/core/nutrition.js",
-  "./js/core/storage.js",
-  "./js/core/ui.js",
+  "js/app.js",
+  "js/core/config.js",
+  "js/core/date.js",
+  "js/core/nutrition.js",
+  "js/core/storage.js",
+  "js/core/ui.js",
 
-  "./js/data/foods.js",
-  "./js/data/menu.js",
-  "./js/data/targets.js",
-  "./js/data/actividad.js",
-  "./js/data/comestibles.js",
+  "js/data/foods.js",
+  "js/data/menu.js",
+  "js/data/targets.js",
+  "js/data/actividad.js",
+  "js/data/comestibles.js",
 
-  "./js/pages/menu.page.js",
-  "./js/pages/lista.page.js",
-  "./js/pages/actividad.page.js",
-  "./js/pages/control.page.js",
+  "js/pages/menu.page.js",
+  "js/pages/lista.page.js",
+  "js/pages/actividad.page.js",
+  "js/pages/control.page.js",
 
-  "./assets/icon-192.png",
-  "./assets/icon-512.png"
+  "assets/icon-192.png",
+  "assets/icon-512.png"
 ];
 
 self.addEventListener("install", event => {
