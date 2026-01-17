@@ -12,6 +12,15 @@ function renderShoppingListPage() {
         section.innerHTML = `<h2>${cat.nombre}</h2><div class="section-group__grid"></div>`;
 
         const grid = section.querySelector('.section-group__grid');
+
+        // Usamos delegación de eventos para mejorar el rendimiento.
+        // Un solo listener en el contenedor en lugar de uno por cada checkbox.
+        grid.addEventListener('change', (e) => {
+            if (e.target.matches('input[type="checkbox"]')) {
+                DB.save(`shop_${e.target.id}`, e.target.checked);
+            }
+        });
+
         cat.items.forEach(item => {
             const label = document.createElement('label');
             label.className = 'row-item';
@@ -24,10 +33,6 @@ function renderShoppingListPage() {
                 </div>
                 <input type="checkbox" id="${item.id}" ${isChecked ? 'checked' : ''}>
             `;
-
-            label.querySelector('input').addEventListener('change', (e) => {
-                DB.save(`shop_${item.id}`, e.target.checked);
-            });
 
             grid.appendChild(label);
         });

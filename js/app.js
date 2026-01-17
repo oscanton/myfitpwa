@@ -8,4 +8,5 @@ window.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('lista-container')) renderShoppingListPage();
     if (document.getElementById('actividad-container')) renderActivityPage();
     if (document.getElementById('months-container')) renderControlPage();
+    if (document.getElementById('calculadora-container')) renderCalculatorPage();
 });

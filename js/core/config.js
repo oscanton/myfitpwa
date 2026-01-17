@@ -2,10 +2,10 @@
    core/config.js - CONFIGURACIÓN GLOBAL
    ========================================= */
 
-const APP_CONFIG = Object.freeze({
-    year: 2026,
-    version: "2.0"
-});
+// Prefijo para las claves de LocalStorage, para evitar colisiones.
+const APP_PREFIX = "saludapp_";
 
-// Prefijo único para claves de LocalStorage
-const APP_PREFIX = "pwa_fit_2026_";
+// Configuración general de la aplicación
+const APP_CONFIG = {
+    year: new Date().getFullYear()
+};

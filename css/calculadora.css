@@ -1,0 +1,58 @@
+/* =========================================
+   css/calculadora.css - ESTILOS ESPECÍFICOS
+   ========================================= */
+
+/* Resumen de Resultados (IMC / BMR) */
+.calc-summary {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.calc-stat { text-align: center; }
+.calc-stat__value { font-size: 2rem; font-weight: bold; line-height: 1; }
+.calc-stat__sub { font-size: 0.85rem; font-weight: 600; margin: 6px 0; }
+
+/* Fila de resultado base (reposo) */
+.base-result-row {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.daily-result-card {
+    flex-direction: column;
+    align-items: stretch;
+}
+/* Filas de detalle diario */
+.calc-day-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calc-day-row__header { text-align: left; }
+.calc-day-row__data { text-align: right; }
+
+.calc-day-row__activity-label {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+.calc-day-row__macros {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+/* Utilidades de Texto */
+.text-center { text-align: center; }
+.input-auto { width: auto !important; }
+.activity-select { width: 180px; text-align: left; }
+
+/* Paleta de Colores Semántica */
+.color-blue { color: #4fc3f7; }
+.color-success { color: var(--color-success); }
+.color-warning { color: var(--color-warning); }
+.color-danger { color: var(--color-danger); }
+.color-critical { color: #b71c1c; }
