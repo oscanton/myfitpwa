@@ -42,7 +42,6 @@ function renderCalculatorPage() {
                 <span class="row-item__title">Peso (kg)</span>
                 <input type="number" id="calc-weight" class="row-item__input" value="${userProfile.weight}">
             </div>
-            <button id="btn-save-calc" class="btn btn--primary" style="grid-column: 1 / -1; margin-top: 10px;">💾 Guardar Datos</button>
         </div>
     `;
     container.appendChild(profileCard);
@@ -237,16 +236,6 @@ function renderCalculatorPage() {
     profileCard.querySelectorAll('input, select').forEach(el => el.addEventListener('change', updateAndCalculate));
     objectivesCard.querySelectorAll('select').forEach(el => el.addEventListener('change', updateAndCalculate));
     
-    // Listener del botón manual de guardar
-    document.getElementById('btn-save-calc').addEventListener('click', () => {
-        updateAndCalculate();
-        const btn = document.getElementById('btn-save-calc');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = "¡Guardado Correctamente!";
-        btn.style.background = "var(--color-success)";
-        setTimeout(() => { btn.innerHTML = originalText; btn.style.background = ""; }, 1500);
-    });
-
     planRows.querySelectorAll('select').forEach(el => {
         el.addEventListener('change', (e) => {
             weeklyPlan[e.target.dataset.index] = e.target.value;
