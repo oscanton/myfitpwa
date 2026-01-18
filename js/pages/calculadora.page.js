@@ -17,6 +17,14 @@ function renderCalculatorPage() {
     // Ajustes por defecto: Mantenimiento (0) para todo
     let adjustments = DB.get('user_adjustments', { kcal: 0, p: 0, c: 0, f: 0 });
 
+    // Configuración de campos de ajuste para iteración (DRY)
+    const ADJ_FIELDS = [
+        { id: 'adj-kcal', label: '🔥Kcal', key: 'kcal' },
+        { id: 'adj-p',    label: '🥩 Prot', key: 'p' },
+        { id: 'adj-c',    label: '🍚 Carb', key: 'c' },
+        { id: 'adj-f',    label: '🥑 Gras', key: 'f' }
+    ];
+
     // --- SECCIÓN 1: DATOS PERSONALES ---
     const profileCard = document.createElement('div');
     profileCard.className = 'card';
@@ -53,73 +61,54 @@ function renderCalculatorPage() {
     // Se rellena en updateAndCalculate
     container.appendChild(baseResultsCard);
 
-    // --- SECCIÓN 3: ACTIVIDAD SEMANAL ---
-    const planCard = document.createElement('div');
-    planCard.className = 'card';
-    planCard.style.marginTop = 'var(--space-lg)';
-    planCard.innerHTML = `<h2 class="text-center">Actividad Semanal</h2><div class="stack-vertical" id="plan-rows"></div>`;
-    container.appendChild(planCard);
-
-    const planRows = planCard.querySelector('#plan-rows');
-
-    DIAS_SEMANA.forEach((day, index) => {
-        const row = document.createElement('div');
-        row.className = 'row-item';
-        
-        let options = '';
-        for (const [key, data] of Object.entries(ACTIVITY_CATALOG)) {
-            const isSelected = weeklyPlan[index] === key ? 'selected' : '';
-            options += `<option value="${key}" ${isSelected}>${data.label}</option>`;
-        }
-
-        row.innerHTML = `
-            <span class="row-item__title">${day}</span>
-            <select class="row-item__input activity-select" data-index="${index}">
-                ${options}
-            </select>
-        `;
-        planRows.appendChild(row);
-    });
-
-    // --- SECCIÓN 4: OBJETIVOS Y PLAN DIARIO ---
-    const objectivesCard = document.createElement('div');
-    objectivesCard.className = 'card';
-    objectivesCard.style.marginTop = 'var(--space-lg)';
+    // --- SECCIÓN 4: AJUSTES GENERALES ---
+    const adjustmentsCard = document.createElement('div');
+    adjustmentsCard.className = 'card';
+    adjustmentsCard.style.marginTop = 'var(--space-lg)';
     
     // Helper para generar opciones (-20% a +20%)
     const generateOpts = (val) => {
-        const steps = [-0.20, -0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15, 0.20];
+        const steps = [0.20, 0.15, 0.10, 0.05, 0, -0.05, -0.10, -0.15, -0.20];
         return steps.map(s => {
             const label = s === 0 ? "0%" : (s > 0 ? `+${Math.round(s*100)}%` : `${Math.round(s*100)}%`);
             return `<option value="${s}" ${Math.abs(val - s) < 0.001 ? 'selected' : ''}>${label}</option>`;
         }).join('');
     };
 
-    objectivesCard.innerHTML = `
-        <h2>Ajustes de Objetivos</h2>
-        <div class="section-group__grid" style="grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: var(--space-md);">
-            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
-                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Kcal</span>
-                <select id="adj-kcal" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.kcal)}</select>
-            </div>
-            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
-                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Prot</span>
-                <select id="adj-p" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.p)}</select>
-            </div>
-            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
-                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Carb</span>
-                <select id="adj-c" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.c)}</select>
-            </div>
-            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
-                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Gras</span>
-                <select id="adj-f" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.f)}</select>
-            </div>
+    adjustmentsCard.innerHTML = `
+        <h2>Ajustes Generales</h2>
+        <div class="section-group__grid" style="grid-template-columns: repeat(4, 1fr); gap: 6px;">
+            ${ADJ_FIELDS.map(field => `
+                <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
+                    <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">${field.label}</span>
+                    <select id="${field.id}" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments[field.key])}</select>
+                </div>
+            `).join('')}
         </div>
-        <div id="daily-results-grid" class="section-group__grid"></div>
     `;
-    container.appendChild(objectivesCard);
+    container.appendChild(adjustmentsCard);
+
+    // --- SECCIÓN 5: OBJETIVOS SEMANALES ---
+    const weeklyGoalsCard = document.createElement('div');
+    weeklyGoalsCard.className = 'card';
+    weeklyGoalsCard.style.marginTop = 'var(--space-lg)';
+    weeklyGoalsCard.innerHTML = `
+        <h2>Objetivos Semanales</h2>
+        <div id="daily-results-grid" class="stack-vertical"></div>
+    `;
+    container.appendChild(weeklyGoalsCard);
 
     // --- LÓGICA DE CÁLCULO ---
+    
+    // Helper para renderizar pills de macros
+    const renderMacroPills = (vals) => `
+        <div class="stats-pills stats-pills--center" style="width: 100%;">
+            <div class="stat-pill stat-pill--kcal">🔥 ${vals.kcal} kcal</div>
+            <div class="stat-pill">🥩 ${vals.p}g</div>
+            <div class="stat-pill">🍚 ${vals.c}g</div>
+            <div class="stat-pill">🥑 ${vals.f}g</div>
+        </div>
+    `;
 
     const updateAndCalculate = () => {
         // Guardar Perfil
@@ -130,10 +119,9 @@ function renderCalculatorPage() {
         DB.save('user_profile', userProfile);
 
         // Guardar Ajustes
-        adjustments.kcal = parseFloat(document.getElementById('adj-kcal').value);
-        adjustments.p = parseFloat(document.getElementById('adj-p').value);
-        adjustments.c = parseFloat(document.getElementById('adj-c').value);
-        adjustments.f = parseFloat(document.getElementById('adj-f').value);
+        ADJ_FIELDS.forEach(field => {
+            adjustments[field.key] = parseFloat(document.getElementById(field.id).value);
+        });
         DB.save('user_adjustments', adjustments);
 
         // Usar Fórmulas del Core
@@ -178,8 +166,8 @@ function renderCalculatorPage() {
                 <!-- BMR -->
                 <div class="mini-card">
                     <div class="mini-card__title">BMR</div>
-                    <div class="mini-card__value ${imcData.className}">
-                        ${bmr}<span class="mini-card__unit"> kcal</span>
+                    <div class="stats-pills stats-pills--center" style="margin: 8px 0;">
+                        <div class="stat-pill stat-pill--kcal">🔥 ${bmr} kcal</div>
                     </div>
                     <div class="mini-card__extra ${imcData.className}">Basal</div>
                 </div>
@@ -187,12 +175,10 @@ function renderCalculatorPage() {
                 <!-- Presupuesto (Reposo) -->
                 <div class="mini-card">
                     <div class="mini-card__title">Presupuesto</div>
-                    <div class="mini-card__value" style="color: var(--color-primary)">
-                        ${restVals.kcal}<span class="mini-card__unit"> kcal</span>
+                    <div class="stats-pills stats-pills--center" style="margin-top: 8px; width: 100%;">
+                        <div class="stat-pill stat-pill--kcal">🔥 ${restVals.kcal} kcal</div>
                     </div>
-                    <div class="mini-card__macros">
-                        P:${restVals.p}g | CH:${restVals.c}g | G:${restVals.f}g
-                    </div>
+                    ${renderMacroPills(restVals).replace('style="width: 100%;"', 'style="margin-top: 4px; width: 100%;"')}
                 </div>
             </div>
         `;
@@ -200,6 +186,8 @@ function renderCalculatorPage() {
         // --- RESULTADOS DIARIOS (OBJETIVOS) ---
         const dailyGrid = document.getElementById('daily-results-grid');
         dailyGrid.innerHTML = '';
+
+        const dailyTargets = {};
 
         DIAS_SEMANA.forEach((day, index) => {
             const activityKey = weeklyPlan[index];
@@ -211,39 +199,34 @@ function renderCalculatorPage() {
             const tdee = bmr * factor;
             const dayVals = getAdjustedValues(tdee, activityKey);
 
+            dailyTargets[day] = {
+                kcal: dayVals.kcal,
+                protein: dayVals.p,
+                carbs: dayVals.c,
+                fat: dayVals.f
+            };
+
             const dayCard = document.createElement('div');
             dayCard.className = 'row-item daily-result-card';
             
             dayCard.innerHTML = `
-                <div class="calc-day-row">
-                    <div class="calc-day-row__header">
-                        <div class="row-item__title">${day}</div>
-                        <div class="calc-day-row__activity-label">${ACTIVITY_CATALOG[activityKey].label}</div>
-                    </div>
-                    <div class="calc-day-row__data">
-                        <div style="font-weight: bold; color: var(--color-primary);">${dayVals.kcal} kcal</div>
-                        <div class="calc-day-row__macros">
-                            P:${dayVals.p}g | CH:${dayVals.c}g | G:${dayVals.f}g
-                        </div>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="row-item__title">${day}</div>
+                    <div class="row-item__subtitle" style="margin-top: 0;">${(ACTIVITY_CATALOG[activityKey] || {}).label || activityKey}</div>
                 </div>
+                ${renderMacroPills(dayVals)}
             `;
             dailyGrid.appendChild(dayCard);
         });
+
+        // Guardamos los objetivos calculados en la DB para que el Menú pueda leerlos
+        DB.save('daily_nutrition_targets', dailyTargets);
     };
 
     // Listeners
     profileCard.querySelectorAll('input, select').forEach(el => el.addEventListener('change', updateAndCalculate));
-    objectivesCard.querySelectorAll('select').forEach(el => el.addEventListener('change', updateAndCalculate));
+    adjustmentsCard.querySelectorAll('select').forEach(el => el.addEventListener('change', updateAndCalculate));
     
-    planRows.querySelectorAll('select').forEach(el => {
-        el.addEventListener('change', (e) => {
-            weeklyPlan[e.target.dataset.index] = e.target.value;
-            DB.save('user_activity_plan', weeklyPlan);
-            updateAndCalculate();
-        });
-    });
-
     // Ejecutar al inicio
     updateAndCalculate();
 }

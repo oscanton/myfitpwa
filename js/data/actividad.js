@@ -11,6 +11,12 @@ const TIPOS_ACTIVIDAD = [
     { value: 'cardio_fuerza_1_5h', label: '🔥 1.5h Cardio + Fuerza' }
 ];
 
+// Catálogo indexado para acceso rápido (O(1)) por clave.
+const ACTIVITY_CATALOG = TIPOS_ACTIVIDAD.reduce((acc, item) => {
+    acc[item.value] = item;
+    return acc;
+}, {});
+
 const RUTINAS = {
     'descanso': {
         titulo: "Recuperación Total",

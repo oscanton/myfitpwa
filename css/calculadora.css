@@ -11,7 +11,7 @@
 }
 
 .mini-card {
-    background: var(--glass-medium);
+    background: var(--glass-dark);
     border-radius: var(--ui-radius-sm);
     padding: var(--space-md) var(--space-xs);
     text-align: center;
@@ -60,6 +60,7 @@
 .daily-result-card {
     flex-direction: column;
     align-items: stretch;
+    gap: 6px;
 }
 /* Filas de detalle diario */
 .calc-day-row {
@@ -93,3 +94,12 @@
 .color-warning { color: var(--color-warning); }
 .color-danger { color: var(--color-danger); }
 .color-critical { color: #b71c1c; }
+
+/* Píldoras de estadísticas */
+.stats-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.stats-pills--center { justify-content: center; }
+.stats-pills--end { justify-content: flex-end; }

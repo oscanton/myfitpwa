@@ -3,6 +3,12 @@
    ========================================= */
 
 function renderMenuPage() {
+
+    const storedTargets = DB.get(
+    'daily_nutrition_targets',
+    DAILY_NUTRITION_TARGETS
+    );
+
     const tableBody = document.getElementById("menu-body");
     if (!tableBody) return;
 
@@ -49,7 +55,7 @@ function renderMenuPage() {
         });
 
         // 2. Lógica de Totales
-        const target = DAILY_NUTRITION_TARGETS[day.dia];
+        const target = storedTargets[day.dia];
         const tKcal = target ? target.kcal : 0;
         const tProt = target ? target.protein : 0;
         const tCarb = target ? target.carbs : 0;

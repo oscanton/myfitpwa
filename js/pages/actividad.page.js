@@ -58,10 +58,10 @@ function generateRoutineContent(type, profileData = null) {
     // Usamos el perfil pasado o leemos de DB si no existe (fallback)
     const userProfile = profileData || DB.get('user_profile', {});
     
-    const userWeight = parseFloat(userProfile.weight || 0);
-    const userHeight = parseFloat(userProfile.height || 0);
-    const userAge = parseFloat(userProfile.age || 0);
-    const userSex = userProfile.sex || 'hombre';
+    const userWeight = parseFloat(userProfile.weight) || 0;
+    const userHeight = parseFloat(userProfile.height) || 0;
+    const userAge = parseInt(userProfile.age) || 0;
+    const userSex = userProfile.sex || 'hombre'; // Default seguro
 
     let statsHtml = '';
 
