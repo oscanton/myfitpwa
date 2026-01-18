@@ -2,49 +2,44 @@
    data/actividad.js - DATOS
    ========================================= */
 
-// --- 5. PLAN: ACTIVIDAD FÍSICA ---
-const ACTIVIDAD_DATA = [
-    {
-        dia: "Lunes",
-        titulo: "Gym 1h: 70% Fuerza + 30% Cardio",
-        ejercicios: "Sentadillas, Press Banca, Remo con barra",
-        explicacion: "Enfoque en grandes grupos musculares. Cardio final en cinta o elíptica."
-    },
-    {
-        dia: "Martes",
-        titulo: "Descanso",
-        ejercicios: "Recuperación total",
-        explicacion: "Hidratación y movilidad suave."
-    },
-    {
-        dia: "Miércoles",
-        titulo: "Gym 1h: 90% Fuerza + 10% Cardio",
-        ejercicios: "Prensa, Remo polea baja, Press inclinado",
-        explicacion: "Día de carga alta sin impacto lumbar."
-    },
-    {
-        dia: "Jueves",
-        titulo: "Mantenimiento activo",
-        ejercicios: "Core, Planchas, Deadbug",
-        explicacion: "Salud de la espalda y zona media."
-    },
-    {
-        dia: "Viernes",
-        titulo: "Gym 1.5h: Fuerza + HIIT",
-        ejercicios: "Zancadas, Fondos, Jalón pecho + Intervalos",
-        explicacion: "Sesión intensa pre-fin de semana."
-    },
-    {
-        dia: "Sábado",
-        titulo: "Aeróbico extensivo",
-        ejercicios: "Caminata / Senderismo / Bici (Zona 2)",
-        explicacion: "Quema de grasas a pulsaciones bajas."
-    },
-    {
-        dia: "Domingo",
-        titulo: "Movilidad y Relax",
-        ejercicios: "Yoga básico, estiramientos",
-        explicacion: "Preparación para la semana."
-    }
+const TIPOS_ACTIVIDAD = [
+    { value: 'descanso', label: '💤 Descanso' },
+    { value: 'descanso_activo', label: '🚶 Descanso Activo' },
+    { value: 'cardio_1h', label: '🏃 1h Cardio' },
+    { value: 'fuerza_1h', label: '🏋️ 1h Fuerza' },
+    { value: 'cardio_fuerza_1h', label: '🔥 1h Cardio + Fuerza' },
+    { value: 'cardio_fuerza_1_5h', label: '🔥 1.5h Cardio + Fuerza' }
 ];
 
+const RUTINAS = {
+    'descanso': {
+        titulo: "Recuperación Total",
+        ejercicios: "Sin actividad física programada",
+        explicacion: "Aprovecha para dormir bien, hidratarte y reducir el estrés. El músculo crece cuando descansas."
+    },
+    'descanso_activo': {
+        titulo: "Movilidad y Recuperación",
+        ejercicios: "Caminata ligera, Yoga suave o Estiramientos (30-45 min)",
+        explicacion: "Actividad de bajo impacto para promover el flujo sanguíneo sin fatigar el sistema nervioso."
+    },
+    'cardio_1h': {
+        titulo: "Resistencia Aeróbica (60 min)",
+        ejercicios: "Correr, Bici, Elíptica o Natación",
+        explicacion: "Mantén un ritmo constante en Zona 2 (puedes hablar pero te cuesta). Mejora la salud cardiovascular."
+    },
+    'fuerza_1h': {
+        titulo: "Hipertrofia / Fuerza (60 min)",
+        ejercicios: "Calentamiento + Rutina Full Body o Torso/Pierna",
+        explicacion: "Ejercicios compuestos (Sentadilla, Press, Remo). Series de 8-12 reps. Controla la fase excéntrica. Descansos de 90s."
+    },
+    'cardio_fuerza_1h': {
+        titulo: "Híbrido Eficiente (60 min)",
+        ejercicios: "40' Fuerza (Circuito) + 20' Cardio",
+        explicacion: "Reparto 66% Fuerza / 33% Cardio. Haz una rutina de fuerza intensa sin pausas largas y termina con 20 min de cardio moderado."
+    },
+    'cardio_fuerza_1_5h': {
+        titulo: "Sesión Completa (90 min)",
+        ejercicios: "60' Fuerza Pesada + 30' Cardio",
+        explicacion: "Reparto 66% Fuerza / 33% Cardio. Dedica 1h a levantar pesado con buenos descansos. Finaliza con 30 min de cardio para oxidar grasas."
+    }
+};

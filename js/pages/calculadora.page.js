@@ -14,8 +14,8 @@ function renderCalculatorPage() {
     // Plan semanal por defecto: todo descanso
     const weeklyPlan = DB.get('user_activity_plan', Array(7).fill('descanso'));
     
-    // Objetivo por defecto: Mantenimiento (0)
-    let objectiveAdjustment = DB.get('user_objective_adjustment', 0);
+    // Ajustes por defecto: Mantenimiento (0) para todo
+    let adjustments = DB.get('user_adjustments', { kcal: 0, p: 0, c: 0, f: 0 });
 
     // --- SECCIÓN 1: DATOS PERSONALES ---
     const profileCard = document.createElement('div');
@@ -42,6 +42,7 @@ function renderCalculatorPage() {
                 <span class="row-item__title">Peso (kg)</span>
                 <input type="number" id="calc-weight" class="row-item__input" value="${userProfile.weight}">
             </div>
+            <button id="btn-save-calc" class="btn btn--primary" style="grid-column: 1 / -1; margin-top: 10px;">💾 Guardar Datos</button>
         </div>
     `;
     container.appendChild(profileCard);
@@ -61,9 +62,8 @@ function renderCalculatorPage() {
     container.appendChild(planCard);
 
     const planRows = planCard.querySelector('#plan-rows');
-    const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
-    days.forEach((day, index) => {
+    DIAS_SEMANA.forEach((day, index) => {
         const row = document.createElement('div');
         row.className = 'row-item';
         
@@ -87,28 +87,34 @@ function renderCalculatorPage() {
     objectivesCard.className = 'card';
     objectivesCard.style.marginTop = 'var(--space-lg)';
     
-    // Generar opciones del select marcando la seleccionada
-    const opts = [
-        { val: -0.20, txt: "Déficit agresivo (-20%)" },
-        { val: -0.15, txt: "Déficit moderado (-15%)" },
-        { val: -0.10, txt: "Déficit ligero (-10%)" },
-        { val: -0.05, txt: "Pequeño déficit (-5%)" },
-        { val: 0,     txt: "Mantenimiento (0%)" },
-        { val: 0.05,  txt: "Superávit ligero (+5%)" },
-        { val: 0.10,  txt: "Superávit (+10%)" }
-    ];
-    
-    const optionsHtml = opts.map(o => 
-        `<option value="${o.val}" ${Math.abs(objectiveAdjustment - o.val) < 0.001 ? 'selected' : ''}>${o.txt}</option>`
-    ).join('');
+    // Helper para generar opciones (-20% a +20%)
+    const generateOpts = (val) => {
+        const steps = [-0.20, -0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15, 0.20];
+        return steps.map(s => {
+            const label = s === 0 ? "0%" : (s > 0 ? `+${Math.round(s*100)}%` : `${Math.round(s*100)}%`);
+            return `<option value="${s}" ${Math.abs(val - s) < 0.001 ? 'selected' : ''}>${label}</option>`;
+        }).join('');
+    };
 
     objectivesCard.innerHTML = `
-        <h2>Objetivos</h2>
-        <div class="row-item" style="margin-bottom: var(--space-md);">
-            <span class="row-item__title">Ajuste</span>
-            <select id="calc-objective" class="row-item__input input-auto">
-                ${optionsHtml}
-            </select>
+        <h2>Ajustes de Objetivos</h2>
+        <div class="section-group__grid" style="grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: var(--space-md);">
+            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
+                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Kcal</span>
+                <select id="adj-kcal" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.kcal)}</select>
+            </div>
+            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
+                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Prot</span>
+                <select id="adj-p" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.p)}</select>
+            </div>
+            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
+                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Carb</span>
+                <select id="adj-c" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.c)}</select>
+            </div>
+            <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
+                <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">Gras</span>
+                <select id="adj-f" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments.f)}</select>
+            </div>
         </div>
         <div id="daily-results-grid" class="section-group__grid"></div>
     `;
@@ -124,43 +130,69 @@ function renderCalculatorPage() {
         userProfile.weight = parseFloat(document.getElementById('calc-weight').value) || 0;
         DB.save('user_profile', userProfile);
 
-        // Guardar Objetivo
-        objectiveAdjustment = parseFloat(document.getElementById('calc-objective').value);
-        DB.save('user_objective_adjustment', objectiveAdjustment);
+        // Guardar Ajustes
+        adjustments.kcal = parseFloat(document.getElementById('adj-kcal').value);
+        adjustments.p = parseFloat(document.getElementById('adj-p').value);
+        adjustments.c = parseFloat(document.getElementById('adj-c').value);
+        adjustments.f = parseFloat(document.getElementById('adj-f').value);
+        DB.save('user_adjustments', adjustments);
 
         // Usar Fórmulas del Core
         const imc = Formulas.calcIMC(userProfile.weight, userProfile.height);
         const imcData = Formulas.getIMCCategory(imc);
         const bmr = Formulas.calcBMR(userProfile.weight, userProfile.height, userProfile.age, userProfile.sex);
 
+        // Helper de cálculo ajustado
+        const getAdjustedValues = (baseKcal, activityKey) => {
+            const targetKcal = baseKcal * (1 + adjustments.kcal);
+            const m = Formulas.calcMacros(targetKcal, activityKey);
+            
+            const p = Math.round(m.p * (1 + adjustments.p));
+            const c = Math.round(m.c * (1 + adjustments.c));
+            const f = Math.round(m.f * (1 + adjustments.f));
+            
+            const finalKcal = (p * 4) + (c * 4) + (f * 9);
+            
+            const pct = {
+                p: finalKcal ? Math.round(p * 4 / finalKcal * 100) : 0,
+                c: finalKcal ? Math.round(c * 4 / finalKcal * 100) : 0,
+                f: finalKcal ? Math.round(f * 9 / finalKcal * 100) : 0
+            };
+            
+            return { p, c, f, pct, kcal: finalKcal };
+        };
+
         // --- RESULTADOS BASE ---
         const restKcal = Math.round(bmr * 1.2); // Factor sedentario
-        const restMacros = Formulas.calcMacros(restKcal, 'descanso');
+        const restVals = getAdjustedValues(restKcal, 'descanso');
 
         baseResultsCard.innerHTML = `
             <h2>Resultados Base</h2>
-            <div class="calc-summary">
-                <div class="calc-stat">
-                    <div class="calc-stat__value ${imcData.className}">${imc}</div>
-                    <div class="calc-stat__sub ${imcData.className}">${imcData.label}</div>
-                    <div class="text-muted">IMC</div>
+            <div class="calc-grid-3">
+                <!-- IMC -->
+                <div class="mini-card">
+                    <div class="mini-card__title">IMC</div>
+                    <div class="mini-card__value ${imcData.className}">${imc}</div>
+                    <div class="mini-card__extra ${imcData.className}">${imcData.label}</div>
                 </div>
-                <div class="calc-stat">
-                    <div class="calc-stat__value ${imcData.className}">${bmr}</div>
-                    <div class="calc-stat__sub ${imcData.className}">kcal</div>
-                    <div class="text-muted">BMR (Basal)</div>
-                </div>
-            </div>
-            <div class="row-item base-result-row">
-                <div class="calc-day-row">
-                    <div class="calc-day-row__header">
-                        <div class="row-item__title">Día de Reposo (Sedentario)</div>
+                
+                <!-- BMR -->
+                <div class="mini-card">
+                    <div class="mini-card__title">BMR</div>
+                    <div class="mini-card__value ${imcData.className}">
+                        ${bmr}<span class="mini-card__unit"> kcal</span>
                     </div>
-                    <div class="calc-day-row__data">
-                        <div style="font-weight: bold; color: var(--color-primary);">${restKcal} kcal</div>
-                        <div class="calc-day-row__macros">
-                            P:${restMacros.p}g (${restMacros.pct.p}%) | CH:${restMacros.c}g (${restMacros.pct.c}%) | G:${restMacros.f}g (${restMacros.pct.f}%)
-                        </div>
+                    <div class="mini-card__extra ${imcData.className}">Basal</div>
+                </div>
+
+                <!-- Presupuesto (Reposo) -->
+                <div class="mini-card">
+                    <div class="mini-card__title">Presupuesto</div>
+                    <div class="mini-card__value" style="color: var(--color-primary)">
+                        ${restVals.kcal}<span class="mini-card__unit"> kcal</span>
+                    </div>
+                    <div class="mini-card__macros">
+                        P:${restVals.p}g | CH:${restVals.c}g | G:${restVals.f}g
                     </div>
                 </div>
             </div>
@@ -170,14 +202,15 @@ function renderCalculatorPage() {
         const dailyGrid = document.getElementById('daily-results-grid');
         dailyGrid.innerHTML = '';
 
-        days.forEach((day, index) => {
+        DIAS_SEMANA.forEach((day, index) => {
             const activityKey = weeklyPlan[index];
-            const factor = ACTIVITY_CATALOG[activityKey].factor;
             
+            // UNIFICACIÓN: Usamos el multiplicador centralizado de Formulas, igual que en Actividad
+            const factor = Formulas.ACTIVITY_MULTIPLIERS[activityKey] || 1.2;
+
             // Cálculo con ajuste
             const tdee = bmr * factor;
-            const targetKcal = Math.round(tdee * (1 + objectiveAdjustment));
-            const macros = Formulas.calcMacros(targetKcal, activityKey);
+            const dayVals = getAdjustedValues(tdee, activityKey);
 
             const dayCard = document.createElement('div');
             dayCard.className = 'row-item daily-result-card';
@@ -189,9 +222,9 @@ function renderCalculatorPage() {
                         <div class="calc-day-row__activity-label">${ACTIVITY_CATALOG[activityKey].label}</div>
                     </div>
                     <div class="calc-day-row__data">
-                        <div style="font-weight: bold; color: var(--color-primary);">${targetKcal} kcal</div>
+                        <div style="font-weight: bold; color: var(--color-primary);">${dayVals.kcal} kcal</div>
                         <div class="calc-day-row__macros">
-                            P:${macros.p}g (${macros.pct.p}%) | CH:${macros.c}g (${macros.pct.c}%) | G:${macros.f}g (${macros.pct.f}%)
+                            P:${dayVals.p}g | CH:${dayVals.c}g | G:${dayVals.f}g
                         </div>
                     </div>
                 </div>
@@ -202,8 +235,18 @@ function renderCalculatorPage() {
 
     // Listeners
     profileCard.querySelectorAll('input, select').forEach(el => el.addEventListener('change', updateAndCalculate));
-    document.getElementById('calc-objective').addEventListener('change', updateAndCalculate);
+    objectivesCard.querySelectorAll('select').forEach(el => el.addEventListener('change', updateAndCalculate));
     
+    // Listener del botón manual de guardar
+    document.getElementById('btn-save-calc').addEventListener('click', () => {
+        updateAndCalculate();
+        const btn = document.getElementById('btn-save-calc');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "¡Guardado Correctamente!";
+        btn.style.background = "var(--color-success)";
+        setTimeout(() => { btn.innerHTML = originalText; btn.style.background = ""; }, 1500);
+    });
+
     planRows.querySelectorAll('select').forEach(el => {
         el.addEventListener('change', (e) => {
             weeklyPlan[e.target.dataset.index] = e.target.value;

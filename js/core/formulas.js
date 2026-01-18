@@ -13,6 +13,16 @@ const Formulas = {
         "cardio_fuerza_1_5h": { p: 0.30, c: 0.50, f: 0.20 }
     },
 
+    // Multiplicadores de actividad (Factor sobre BMR)
+    ACTIVITY_MULTIPLIERS: {
+        "descanso":           1.2,
+        "descanso_activo":    1.3,
+        "cardio_1h":          1.5,
+        "fuerza_1h":          1.45,
+        "cardio_fuerza_1h":   1.6,
+        "cardio_fuerza_1_5h": 1.75
+    },
+
     calcIMC: (weight, height) => {
         const hM = height / 100;
         return (hM > 0) ? (weight / (hM * hM)).toFixed(1) : 0;

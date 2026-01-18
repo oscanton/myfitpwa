@@ -9,3 +9,6 @@ const APP_PREFIX = "saludapp_";
 const APP_CONFIG = {
     year: new Date().getFullYear()
 };
+
+// Constantes Globales (Fuente única de verdad)
+const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];

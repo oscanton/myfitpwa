@@ -2,22 +2,59 @@
    css/calculadora.css - ESTILOS ESPECÍFICOS
    ========================================= */
 
-/* Resumen de Resultados (IMC / BMR) */
-.calc-summary {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    margin-bottom: 20px;
+/* Grid de 3 columnas para resultados base */
+.calc-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
 }
 
-.calc-stat { text-align: center; }
-.calc-stat__value { font-size: 2rem; font-weight: bold; line-height: 1; }
-.calc-stat__sub { font-size: 0.85rem; font-weight: 600; margin: 6px 0; }
-
-/* Fila de resultado base (reposo) */
-.base-result-row {
+.mini-card {
+    background: var(--glass-medium);
+    border-radius: var(--ui-radius-sm);
+    padding: var(--space-md) var(--space-xs);
+    text-align: center;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    justify-content: flex-start;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.mini-card__title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.mini-card__value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+
+.mini-card__unit {
+    font-size: 0.7rem;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+.mini-card__extra {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: auto;
+}
+
+/* Macros en tarjeta pequeña */
+.mini-card__macros {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+    margin-top: auto;
 }
 
 .daily-result-card {

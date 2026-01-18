@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actividad Física</title>
+    <title>Actividad | SaludApp</title>
     <link rel="stylesheet" href="../css/app.css">
     <link rel="stylesheet" href="../css/components.css">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#0f2027">
 </head>
 <body>
 
-    <a href="../index.html" class="btn btn--link">← Volver</a>
-    <h1>Plan de Actividad</h1>
+    <div class="layout-container">
+        <!-- Navegación simple -->
+        <a href="../index.html" class="btn btn--link">← Volver al Menú</a>
 
-    <div id="actividad-container" class="stack-vertical"></div>
+        <h1>Tu Plan de Actividad</h1>
 
-    <!-- Core -->
+        <!-- Contenedor donde se inyecta la lógica. Usamos stack-vertical para separación automática -->
+        <div id="actividad-container" class="stack-vertical"></div>
+    </div>
+
+    <!-- Scripts del Core -->
     <script src="../js/core/config.js"></script>
-    <script src="../js/core/date.js"></script>
-    <script defer src="../js/core/pwa.js"></script>
-
-    <!-- Data -->
+    <script src="../js/core/storage.js"></script>
+    <script src="../js/core/formulas.js"></script>
+    
+    <!-- Datos y Lógica específica -->
     <script src="../js/data/actividad.js"></script>
-
-    <!-- Page -->
     <script src="../js/pages/actividad.page.js"></script>
     <script src="../js/app.js"></script>
-
+    
+    <script>
+        // Inicialización manual por si app.js no lo gestiona automáticamente
+        if (typeof renderActivityPage === 'function') renderActivityPage();
+    </script>
 </body>
 </html>
