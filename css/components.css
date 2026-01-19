@@ -150,6 +150,7 @@
     color: var(--color-primary);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     font-size: 1.5rem;
+    min-width: 220px;
 }
 
 .menu-table {
@@ -166,12 +167,14 @@
     color: var(--color-primary);
     border-bottom: 1px solid rgba(255,255,255,0.1);
     font-size: 1.5rem;
+    min-width: 120px;
 }
 
 .menu-table td {
     padding: var(--space-md);
     vertical-align: top;
     border-bottom: 1px solid rgba(255,255,255,0.05);
+    min-width: 120px;
 }
 
 /* Alternancia de colores para lectura */
