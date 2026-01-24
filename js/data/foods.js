@@ -7,7 +7,6 @@ const FOODS = {
 
   /* =========================
      VERDURAS Y HORTALIZAS
-     (orden alfabético por clave)
      ========================= */
   acelga: { name: "Acelga", unit: "g", nutritionPer100: { kcal: 19, protein: 1.8, carbs: 3.7, fat: 0.2, saturated_fat: 0.0, fiber: 1.6, sugar: 1.1, sodium: 210 }, processed: 0 },
   ajo: { name: "Ajo", unit: "g", nutritionPer100: { kcal: 149, protein: 6.4, carbs: 33.1, fat: 0.5, saturated_fat: 0.1, fiber: 2.1, sugar: 1.0, sodium: 17 }, processed: 0 },
@@ -69,6 +68,7 @@ const FOODS = {
   alubias: { name: "Alubias cocidas", unit: "g", nutritionPer100: { kcal: 110, protein: 7.5, carbs: 19.7, fat: 0.5, saturated_fat: 0.1, fiber: 6.3, sugar: 0.6, sodium: 5 }, processed: 1 },
   edamame: { name: "Edamame", unit: "g", nutritionPer100: { kcal: 121, protein: 11.9, carbs: 8.9, fat: 5.2, saturated_fat: 0.7, fiber: 5.2, sugar: 2.2, sodium: 6 }, processed: 2 },
   garbanzos: { name: "Garbanzos cocidos", unit: "g", nutritionPer100: { kcal: 164, protein: 8.9, carbs: 27.4, fat: 2.6, saturated_fat: 0.3, fiber: 7.6, sugar: 4.8, sodium: 7 }, processed: 1 },
+  guisantes: { name: "Guisantes", unit: "g", nutritionPer100: { kcal: 81, protein: 5.4, carbs: 14.5, fat: 0.4, saturated_fat: 0.1, fiber: 5.1, sugar: 5.7, sodium: 5 }, processed: 0 },
   hummus: { name: "Hummus", unit: "g", nutritionPer100: { kcal: 166, protein: 7.9, carbs: 14.3, fat: 9.6, saturated_fat: 1.4, fiber: 6.0, sugar: 0.3, sodium: 300 }, processed: 4 },
   lentejas: { name: "Lentejas cocidas", unit: "g", nutritionPer100: { kcal: 116, protein: 9.0, carbs: 20.1, fat: 0.4, saturated_fat: 0.1, fiber: 7.9, sugar: 1.8, sodium: 2 }, processed: 1 },
 
@@ -91,9 +91,12 @@ const FOODS = {
      PROTEÍNAS (CARNES, PESCADOS, MARISCOS, VEGETALES)
      ========================= */
   atun: { name: "Atún", unit: "g", nutritionPer100: { kcal: 109, protein: 24.0, carbs: 0.0, fat: 1.0, saturated_fat: 0.3, fiber: 0.0, sugar: 0.0, sodium: 50 }, processed: 2 },
+  atun_lata_natural: { name: "Atún al natural (lata)", unit: "g", nutritionPer100: { kcal: 116, protein: 26.0, carbs: 0.0, fat: 1.0, saturated_fat: 0.3, fiber: 0.0, sugar: 0.0, sodium: 300 }, processed: 5 },
   bacalao: { name: "Bacalao", unit: "g", nutritionPer100: { kcal: 82, protein: 18.0, carbs: 0.0, fat: 0.7, saturated_fat: 0.1, fiber: 0.0, sugar: 0.0, sodium: 54 }, processed: 1 },
   bonito: { name: "Bonito", unit: "g", nutritionPer100: { kcal: 140, protein: 24.0, carbs: 0.0, fat: 5.0, saturated_fat: 1.3, fiber: 0.0, sugar: 0.0, sodium: 60 }, processed: 1 },
   calamar: { name: "Calamar", unit: "g", nutritionPer100: { kcal: 92, protein: 15.6, carbs: 3.1, fat: 1.4, saturated_fat: 0.4, fiber: 0.0, sugar: 0.0, sodium: 44 }, processed: 1 },
+  conejo: { name: "Conejo", unit: "g", nutritionPer100: { kcal: 136, protein: 21.0, carbs: 0.0, fat: 5.5, saturated_fat: 1.5, fiber: 0.0, sugar: 0.0, sodium: 45}, processed: 1 },
+  cordero: {name: "Cordero", unit: "g", nutritionPer100: { kcal: 250, protein: 25.0, carbs: 0.0, fat: 20.0, saturated_fat: 9.0, fiber: 0.0, sugar: 0.0, sodium: 70}, processed: 2 },
   carne_magra: { name: "Carne magra", unit: "g", nutritionPer100: { kcal: 140, protein: 26.0, carbs: 0.0, fat: 4.0, saturated_fat: 1.5, fiber: 0.0, sugar: 0.0, sodium: 70 }, processed: 2 },
   claras_huevo: { name: "Claras de huevo", unit: "g", nutritionPer100: { kcal: 52, protein: 11.0, carbs: 1.0, fat: 0.2, saturated_fat: 0.0, fiber: 0.0, sugar: 1.0, sodium: 166 }, processed: 3 },
   gambas: { name: "Gambas", unit: "g", nutritionPer100: { kcal: 99, protein: 24.0, carbs: 0.2, fat: 0.3, saturated_fat: 0.1, fiber: 0.0, sugar: 0.0, sodium: 150 }, processed: 1 },
@@ -103,7 +106,7 @@ const FOODS = {
   mejillones: { name: "Mejillones", unit: "g", nutritionPer100: { kcal: 172, protein: 24.0, carbs: 7.4, fat: 4.5, saturated_fat: 1.2, fiber: 0.0, sugar: 0.0, sodium: 286 }, processed: 1 },
   merluza: { name: "Merluza", unit: "g", nutritionPer100: { kcal: 73, protein: 16.0, carbs: 0.0, fat: 1.0, saturated_fat: 0.2, fiber: 0.0, sugar: 0.0, sodium: 60 }, processed: 1 },
   pavo: { name: "Pavo", unit: "g", nutritionPer100: { kcal: 110, protein: 24.0, carbs: 0.0, fat: 1.0, saturated_fat: 0.3, fiber: 0.0, sugar: 0.0, sodium: 70 }, processed: 1 },
-  pechuga_pollo: { name: "Pechuga de pollo", unit: "g", nutritionPer100: { kcal: 165, protein: 31.0, carbs: 0.0, fat: 3.6, saturated_fat: 1.0, fiber: 0.0, sugar: 0.0, sodium: 74 }, processed: 1 },
+  pechuga_pollo: { name: "Pechuga de pollo", unit: "g", nutritionPer100: { kcal: 165, protein: 31.0, carbs: 0.0, fat: 2.0, saturated_fat: 1.0, fiber: 0.0, sugar: 0.0, sodium: 74 }, processed: 1 },
   pechuga_pavo: { name: "Pechuga de pavo", unit: "g", nutritionPer100: { kcal: 135, protein: 29.0, carbs: 0.0, fat: 1.6, saturated_fat: 0.4, fiber: 0.0, sugar: 0.0, sodium: 80 }, processed: 2 },
   pescado_azul: { name: "Pescado azul", unit: "g", nutritionPer100: { kcal: 200, protein: 20.0, carbs: 0.0, fat: 13.0, saturated_fat: 3.0, fiber: 0.0, sugar: 0.0, sodium: 70 }, processed: 1 },
   pescado_blanco: { name: "Pescado blanco", unit: "g", nutritionPer100: { kcal: 90, protein: 20.0, carbs: 0.0, fat: 1.0, saturated_fat: 0.2, fiber: 0.0, sugar: 0.0, sodium: 70 }, processed: 1 },
@@ -151,6 +154,7 @@ const FOODS = {
   sal: { name: "Sal", unit: "g", nutritionPer100: { kcal: 0, protein: 0.0, carbs: 0.0, fat: 0.0, saturated_fat: 0.0, fiber: 0.0, sugar: 0.0, sodium: 38758 }, processed: 3 },
   vinagre: { name: "Vinagre", unit: "g", nutritionPer100: { kcal: 18, protein: 0.0, carbs: 0.04, fat: 0.0, saturated_fat: 0.0, fiber: 0.0, sugar: 0.04, sodium: 2 }, processed: 2 },
   vinagre_balsamico: { name: "Vinagre balsámico", unit: "g", nutritionPer100: { kcal: 88, protein: 0.5, carbs: 17.0, fat: 0.0, saturated_fat: 0.0, fiber: 0.0, sugar: 15.0, sodium: 23 }, processed: 4 },
+  miel: { name: "Miel", unit: "g", nutritionPer100: { kcal: 304, protein: 0.3, carbs: 82.4, fat: 0.0, saturated_fat: 0.0, fiber: 0.2, sugar: 82.1, sodium: 4 }, processed: 2 },
 
   /* =========================
      BEBIDAS E INFUSIONES
@@ -172,6 +176,8 @@ const FOODS = {
   jamon_york: { name: "Jamón york", unit: "g", nutritionPer100: { kcal: 110, protein: 18.0, carbs: 2.0, fat: 3.0, saturated_fat: 1.0, fiber: 0.0, sugar: 1.0, sodium: 1000 }, processed: 7 },
   patatas_fritas: { name: "Patatas fritas", unit: "g", nutritionPer100: { kcal: 536, protein: 7.0, carbs: 53.0, fat: 35.0, saturated_fat: 5.0, fiber: 4.0, sugar: 0.5, sodium: 525 }, processed: 9 },
   pepinillos_encurtidos: { name: "Pepinillos encurtidos", unit: "g", nutritionPer100: { kcal: 11, protein: 0.5, carbs: 2.3, fat: 0.2, saturated_fat: 0.0, fiber: 1.2, sugar: 1.2, sodium: 1200 }, processed: 6 },
+  salmon_ahumado: { name: "Salmón ahumado", unit: "g", nutritionPer100: { kcal: 117, protein: 18.3, carbs: 0.0, fat: 4.3, saturated_fat: 0.9, fiber: 0.0, sugar: 0.0, sodium: 1200 }, processed: 7 },
+  surimi: { name: "Surimi (cangrejo)", unit: "g", nutritionPer100: { kcal: 95, protein: 7.5, carbs: 15.0, fat: 0.5, saturated_fat: 0.1, fiber: 0.5, sugar: 6.5, sodium: 700 }, processed: 8 },
 
   /* =========================
      SUPLEMENTOS

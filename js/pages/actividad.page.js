@@ -37,7 +37,7 @@ function renderActivityPage() {
             <div class="activity-header">${diaNombre} ${isActive ? ' (HOY)' : ''}</div>
             
             <div style="margin: 8px 0;">
-                <select class="activity-select-input" onchange="updateActivity(${index}, this.value)">
+                <select class="input-base input-select w-100" onchange="updateActivity(${index}, this.value)">
                     ${options}
                 </select>
             </div>

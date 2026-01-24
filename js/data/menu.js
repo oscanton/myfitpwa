@@ -3,7 +3,7 @@
    ========================================= */
 
 // --- 3. PLAN: MENÚ SEMANAL ---
-const MENU_DATA = [
+window.MENU_DATA = [
     {
         dia: "Lunes",
         desayuno: {
@@ -110,4 +110,3 @@ const MENU_DATA = [
         }
     }
 ];
-

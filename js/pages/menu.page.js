@@ -3,18 +3,162 @@
    ========================================= */
 
 function renderMenuPage() {
-
-    const storedTargets = DB.get(
-    'daily_nutrition_targets',
-    DAILY_NUTRITION_TARGETS
-    );
-
     const tableBody = document.getElementById("menu-body");
     if (!tableBody) return;
 
-    tableBody.innerHTML = "";
+    // --- 1. Selector de Datos (Dropdown) ---
+    // Buscamos el contenedor principal para insertar el selector
+    let container = document.getElementById('menu-container');
+    if (!container) {
+        const table = tableBody.closest('table');
+        if (table) container = table.parentElement;
+    }
 
-    MENU_DATA.forEach(day => {
+    // --- Helpers Locales (Definidos dentro para evitar conflictos de redeclaración) ---
+    const NUTRITION = {
+        calculateMeal: (items) => {
+            let total = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+            if (!items || !Array.isArray(items)) return total;
+            
+            items.forEach(item => {
+                // Verificar que FOODS existe y el alimento también
+                if (typeof FOODS === 'undefined') {
+                    // Error logueado en renderTableContent para no saturar
+                    return;
+                }
+                const food = FOODS[item.foodId];
+                if (!food) {
+                    console.warn(`Alimento no encontrado: ${item.foodId}`);
+                    return;
+                }
+                
+                let ratio = 0;
+                if (food.nutritionPer100) {
+                    ratio = item.amount / 100;
+                    total.kcal += food.nutritionPer100.kcal * ratio;
+                    total.protein += food.nutritionPer100.protein * ratio;
+                    total.carbs += food.nutritionPer100.carbs * ratio;
+                    total.fat += food.nutritionPer100.fat * ratio;
+                } else if (food.nutritionPerUnit) {
+                    ratio = item.amount;
+                    total.kcal += food.nutritionPerUnit.kcal * ratio;
+                    total.protein += food.nutritionPerUnit.protein * ratio;
+                    total.carbs += food.nutritionPerUnit.carbs * ratio;
+                    total.fat += food.nutritionPerUnit.fat * ratio;
+                }
+            });
+            return total;
+        }
+    };
+
+    const getStatusClass = (current, target) => {
+        if (!target || target === 0) return '';
+        const pct = (current / target) * 100;
+        if (pct > 110) return 'status-danger'; 
+        if (pct < 90) return 'status-warning'; 
+        return 'status-ok'; 
+    };
+
+    // Inyectar estilos para los estados si no existen
+    if (!document.getElementById('menu-styles')) {
+        const style = document.createElement('style');
+        style.id = 'menu-styles';
+        style.innerHTML = `
+            .status-ok { color: var(--color-success); font-weight: bold; }
+            .status-warning { color: var(--color-warning); font-weight: bold; }
+            .status-danger { color: var(--color-danger); font-weight: bold; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // Configuración de archivos disponibles
+    // NOTA: Para añadir más menús, crea el archivo en js/data/ y regístralo aquí.
+    // Importante: El archivo nuevo debe empezar con window.MENU_DATA = [...]
+    const AVAILABLE_MENUS = [
+        { label: 'menu', file: 'menu.js' },
+        { label: 'menu_1', file: 'menu_1.js' },
+        // { label: 'menu_2', file: 'menu_2.js' }, // Ejemplo para futuros archivos
+    ];
+
+    const currentFile = DB.get('selected_menu_file', 'menu.js');
+
+    // --- Función para Cargar Datos (Hot-Swap) ---
+    const loadMenuData = (fileName) => {
+        const isInViews = window.location.pathname.includes('/views/');
+        const basePath = isInViews ? '../js/data/' : 'js/data/';
+        const scriptPath = `${basePath}${fileName}?v=${Date.now()}`;
+        const scriptId = 'dynamic-menu-data';
+        
+        // Eliminar script anterior para forzar recarga limpia
+        const oldScript = document.getElementById(scriptId);
+        if (oldScript) oldScript.remove();
+
+        // Limpiar explícitamente para evitar datos antiguos si falla la carga
+        window.MENU_DATA = undefined;
+
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = scriptPath;
+        
+        script.onload = () => {
+            setTimeout(renderTableContent, 50);
+        };
+        
+        script.onerror = () => {
+            tableBody.innerHTML = `<tr><td colspan="3" style="color:var(--color-danger)">Error cargando ${fileName}</td></tr>`;
+        };
+        
+        document.body.appendChild(script);
+    };
+
+    // --- Inyectar Selector en el Título (H1) ---
+    const h1 = document.querySelector('h1');
+    if (h1 && !document.getElementById('menu-select')) {
+        const options = AVAILABLE_MENUS.map(m => 
+            `<option value="${m.file}" ${m.file === currentFile ? 'selected' : ''}>${m.label}</option>`
+        ).join('');
+
+        const select = document.createElement('select');
+        select.id = 'menu-select';
+        select.className = 'input-base input-select';
+        // Estilos para integrarlo en el H1
+        select.style.cssText = "width: auto; margin-left: 15px; font-size: 1rem; padding: 6px 30px 6px 12px; font-weight: normal; vertical-align: middle; display: inline-block;";
+        select.innerHTML = options;
+        
+        // Ajustar H1 para alineación
+        h1.style.display = 'flex';
+        h1.style.justifyContent = 'center';
+        h1.style.alignItems = 'center';
+        h1.style.flexWrap = 'wrap';
+        h1.appendChild(select);
+
+        select.addEventListener('change', (e) => {
+            const newFile = e.target.value;
+            DB.save('selected_menu_file', newFile);
+            loadMenuData(newFile); // Carga directa sin reload
+        });
+    }
+
+    // --- 2. Lógica de Renderizado (Encapsulada) ---
+    const renderTableContent = () => {
+        // Asegurar que MENU_DATA existe
+        if (typeof window.MENU_DATA === 'undefined') {
+            console.error("Error: MENU_DATA no está definido.");
+            tableBody.innerHTML = `<tr><td colspan="3" style="color:var(--color-danger)">Error: MENU_DATA no disponible.</td></tr>`;
+            return;
+        }
+
+        const storedTargets = DB.get(
+            'daily_nutrition_targets',
+            (typeof DAILY_NUTRITION_TARGETS !== 'undefined' ? DAILY_NUTRITION_TARGETS : {})
+        );
+
+        const currentData = window.MENU_DATA;
+
+        tableBody.innerHTML = "";
+
+        try {
+        currentData.forEach(day => {
         const meals = ['desayuno', 'comida', 'cena'];
         const dayTotals = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
         const row = document.createElement("tr");
@@ -93,4 +237,13 @@ function renderMenuPage() {
         row.innerHTML = html;
         tableBody.appendChild(row);
     });
+        } catch (error) {
+            console.error("Error renderizando el menú:", error);
+            tableBody.innerHTML = `<tr><td colspan="3" style="padding: 20px; text-align: center; color: var(--color-danger);">Error cargando los datos: ${error.message}</td></tr>`;
+        }
+    };
+
+    // --- 3. Carga Dinámica del Script ---
+    // Carga inicial
+    loadMenuData(currentFile);
 }

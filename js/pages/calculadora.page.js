@@ -19,10 +19,10 @@ function renderCalculatorPage() {
 
     // Configuración de campos de ajuste para iteración (DRY)
     const ADJ_FIELDS = [
-        { id: 'adj-kcal', label: '🔥Kcal', key: 'kcal' },
-        { id: 'adj-p',    label: '🥩 Prot', key: 'p' },
-        { id: 'adj-c',    label: '🍚 Carb', key: 'c' },
-        { id: 'adj-f',    label: '🥑 Gras', key: 'f' }
+        { id: 'adj-kcal', label: '🔥 Kcal', key: 'kcal' },
+        { id: 'adj-p',    label: '🥩 Proteína', key: 'p' },
+        { id: 'adj-c',    label: '🍚 Carbo H', key: 'c' },
+        { id: 'adj-f',    label: '🥑 Grasas', key: 'f' }
     ];
 
     // --- SECCIÓN 1: DATOS PERSONALES ---
@@ -33,7 +33,7 @@ function renderCalculatorPage() {
         <div class="section-group__grid">
             <div class="row-item">
                 <span class="row-item__title">Sexo</span>
-                <select id="calc-sex" class="row-item__input input-auto">
+                <select id="calc-sex" class="input-base input-select" style="width: auto;">
                     <option value="hombre" ${userProfile.sex === 'hombre' ? 'selected' : ''}>Hombre</option>
                     <option value="mujer" ${userProfile.sex === 'mujer' ? 'selected' : ''}>Mujer</option>
                 </select>
@@ -77,13 +77,29 @@ function renderCalculatorPage() {
 
     adjustmentsCard.innerHTML = `
         <h2>Ajustes Generales</h2>
-        <div class="section-group__grid" style="grid-template-columns: repeat(4, 1fr); gap: 6px;">
+        <div class="adjustments-container">
+            <!-- Columna de Etiquetas -->
+            <div class="adj-labels-col">
+                <div class="adj-col-header">&nbsp;</div>
+                <div class="adj-row-label">Base</div>
+                <div class="adj-row-label">Ajuste</div>
+                <div class="adj-row-label">Objetivo</div>
+            </div>
+    
+            <!-- Columnas de Datos -->
             ${ADJ_FIELDS.map(field => `
-                <div class="row-item" style="flex-direction: column; padding: 8px 4px;">
-                    <span style="font-size: 0.65rem; text-transform: uppercase; opacity: 0.7;">${field.label}</span>
-                    <select id="${field.id}" class="row-item__input" style="width: 100%; margin-top: 4px; padding: 4px; font-size: 0.8rem;">${generateOpts(adjustments[field.key])}</select>
+                <div class="adj-data-col">
+                    <div class="adj-col-header">${field.label}</div>
+                    <div class="adj-data-cell" id="adj-base-${field.key}">-</div>
+                    <div class="adj-data-cell">
+                        <select id="${field.id}" class="input-select text-center" style="border:none; background-color:transparent; padding-right:14px; background-position: right 0 center;">${generateOpts(adjustments[field.key])}</select>
+                    </div>
+                    <div class="adj-data-cell adj-data-cell--highlight" id="adj-obj-${field.key}">-</div>
                 </div>
             `).join('')}
+        </div>
+        <div class="text-muted text-center" style="margin-top: 8px; font-size: 0.75rem;">
+            * Base calculada sobre Reposo (Sedentario)
         </div>
     `;
     container.appendChild(adjustmentsCard);
@@ -130,13 +146,13 @@ function renderCalculatorPage() {
         const bmr = Formulas.calcBMR(userProfile.weight, userProfile.height, userProfile.age, userProfile.sex);
 
         // Helper de cálculo ajustado
-        const getAdjustedValues = (baseKcal, activityKey) => {
-            const targetKcal = baseKcal * (1 + adjustments.kcal);
+        const getAdjustedValues = (baseKcal, activityKey, customAdj = adjustments) => {
+            const targetKcal = baseKcal * (1 + customAdj.kcal);
             const m = Formulas.calcMacros(targetKcal, activityKey);
             
-            const p = Math.round(m.p * (1 + adjustments.p));
-            const c = Math.round(m.c * (1 + adjustments.c));
-            const f = Math.round(m.f * (1 + adjustments.f));
+            const p = Math.round(m.p * (1 + customAdj.p));
+            const c = Math.round(m.c * (1 + customAdj.c));
+            const f = Math.round(m.f * (1 + customAdj.f));
             
             const finalKcal = (p * 4) + (c * 4) + (f * 9);
             
@@ -151,34 +167,39 @@ function renderCalculatorPage() {
 
         // --- RESULTADOS BASE ---
         const restKcal = Math.round(bmr * 1.2); // Factor sedentario
-        const restVals = getAdjustedValues(restKcal, 'descanso');
+        
+        // Actualizar Tabla de Ajustes (Base vs Objetivo)
+        const zeroAdj = { kcal: 0, p: 0, c: 0, f: 0 };
+        const tableBaseVals = getAdjustedValues(restKcal, 'descanso', zeroAdj);
+        const tableObjVals = getAdjustedValues(restKcal, 'descanso'); // Usa adjustments actuales
+
+        const updateTableVal = (prefix, vals) => {
+            const setVal = (k, v) => { const el = document.getElementById(`${prefix}-${k}`); if(el) el.textContent = v; };
+            setVal('kcal', vals.kcal);
+            setVal('p', vals.p + 'g');
+            setVal('c', vals.c + 'g');
+            setVal('f', vals.f + 'g');
+        };
+        updateTableVal('adj-base', tableBaseVals);
+        updateTableVal('adj-obj', tableObjVals);
 
         baseResultsCard.innerHTML = `
             <h2>Resultados Base</h2>
-            <div class="calc-grid-3">
+            <div class="calc-grid-2">
                 <!-- IMC -->
-                <div class="mini-card">
-                    <div class="mini-card__title">IMC</div>
-                    <div class="mini-card__value ${imcData.className}">${imc}</div>
-                    <div class="mini-card__extra ${imcData.className}">${imcData.label}</div>
+                <div class="card-panel">
+                    <div class="text-label">IMC</div>
+                    <div class="text-value ${imcData.className}">${imc}</div>
+                    <div class="text-sm text-muted ${imcData.className}" style="margin-top:auto;">${imcData.label}</div>
                 </div>
                 
                 <!-- BMR -->
-                <div class="mini-card">
-                    <div class="mini-card__title">BMR</div>
+                <div class="card-panel">
+                    <div class="text-label">BMR</div>
                     <div class="stats-pills stats-pills--center" style="margin: 8px 0;">
                         <div class="stat-pill stat-pill--kcal">🔥 ${bmr} kcal</div>
                     </div>
-                    <div class="mini-card__extra ${imcData.className}">Basal</div>
-                </div>
-
-                <!-- Presupuesto (Reposo) -->
-                <div class="mini-card">
-                    <div class="mini-card__title">Presupuesto</div>
-                    <div class="stats-pills stats-pills--center" style="margin-top: 8px; width: 100%;">
-                        <div class="stat-pill stat-pill--kcal">🔥 ${restVals.kcal} kcal</div>
-                    </div>
-                    ${renderMacroPills(restVals).replace('style="width: 100%;"', 'style="margin-top: 4px; width: 100%;"')}
+                    <div class="text-sm text-muted" style="margin-top:auto;">Basal</div>
                 </div>
             </div>
         `;

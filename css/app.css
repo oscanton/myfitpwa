@@ -66,6 +66,13 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Utilidades Globales */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+.w-100 { width: 100%; }
+}
+
 /* =========================================
    TIPOGRAFÍA GLOBAL
    ========================================= */
@@ -87,10 +94,28 @@ h2 {
     letter-spacing: 0.5px;
 }
 
-/* Utilidad para texto secundario */
-.text-muted {
+/* Clases de Tipografía Estándar */
+.text-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     color: var(--color-text-muted);
-    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.text-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-text-main);
+}
+
+.text-body { font-size: 1rem; line-height: 1.5; }
+.text-sm { font-size: 0.85rem; }
+.text-xs { font-size: 0.75rem; }
+.text-muted { color: var(--color-text-muted); }
+.text-primary { color: var(--color-primary); }
 }
 
 /* =========================================
