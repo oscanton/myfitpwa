@@ -1,0 +1,356 @@
+/* =========================================
+   components.css - UI KIT & MÓDULOS
+   ========================================= */
+
+/* --- 1. BASES & UTILIDADES DE UI --- */
+
+/* Estilo base "Glass" compartido para contenedores */
+.card,
+.section-group,
+.activity-card,
+.chart-box {
+    background: var(--glass-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow);
+}
+
+/* --- 2. CONTENEDORES ESPECÍFICOS --- */
+
+.card {
+    padding: var(--space-xl);
+    text-align: center;
+}
+
+/* Panel: Sub-tarjeta para datos (Reemplaza a mini-card) */
+.card-panel {
+    background: var(--glass-dark);
+    border-radius: var(--ui-radius-sm);
+    padding: var(--space-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.chart-box {
+    background: rgba(255, 255, 255, 0.03); /* Override ligero */
+    padding: var(--space-md);
+    margin: var(--space-lg) 0;
+    height: 300px;
+    position: relative;
+}
+
+.section-group {
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.section-group__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-sm);
+}
+
+/* --- 3. BOTONES --- */
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin-bottom: var(--space-md);
+    
+    background: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    
+    color: var(--color-text-main);
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    
+    transition: transform 0.1s ease, filter 0.2s;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn--primary {
+    background: var(--ui-highlight-gradient);
+    color: #1a1a1a;
+    box-shadow: 0 4px 15px rgba(255, 209, 102, 0.3);
+}
+
+.btn--danger {
+    background: linear-gradient(135deg, #ff5f6d, #ffc371);
+    color: #fff;
+    margin-top: var(--space-xl);
+}
+
+.btn--link {
+    display: inline-block;
+    width: auto;
+    padding: var(--space-xs) 0;
+    margin-bottom: var(--space-lg);
+    color: var(--color-primary);
+    font-size: 0.9rem;
+}
+
+/* --- 4. LISTAS & FILAS (Rows) --- */
+
+.row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    
+    background: var(--glass-dark);
+    border-radius: var(--ui-radius-sm);
+    padding: 12px;
+    transition: background 0.3s;
+}
+
+.row-item--active {
+    background: var(--ui-highlight-gradient);
+    color: #000;
+}
+
+.row-item--active .row-item__subtitle { opacity: 0.8; color: #000; }
+.row-item--active input { color: #000; border-color: rgba(0,0,0,0.2); }
+
+.row-item__info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.row-item__title { font-weight: 600; }
+.row-item__subtitle { font-size: 0.75rem; opacity: 0.7; margin-top: 2px; }
+
+/* --- INPUTS & SELECTS UNIFICADOS --- */
+
+.input-base {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--ui-radius-sm);
+    color: var(--color-text-main);
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.input-base:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Estilo consistente para spinners en inputs numéricos */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    opacity: 0.4;
+    margin-left: 4px;
+}
+
+/* Select con flecha personalizada */
+.input-select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    padding-right: 32px; /* Espacio para la flecha */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+}
+
+.input-select option {
+    background-color: #203a43;
+    color: #fff;
+}
+
+/* Variante: Select Minimalista (para tablas/grids densos) */
+.input-minimal {
+    background-color: transparent;
+    border: none;
+    padding: 0 18px 0 4px; /* Espacio a la derecha para flecha */
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    text-align-last: center;
+    font-size: 0.9rem;
+    color: inherit;
+    background-position: right 0 center; /* Ajuste de flecha */
+}
+.input-minimal:focus {
+    outline: none;
+    background-color: rgba(255,255,255,0.05);
+}
+
+/* Variante: Select Inline (para cabeceras) */
+.input-inline {
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: var(--space-md);
+    padding: 6px 30px 6px 12px;
+    font-weight: normal;
+    font-size: 1rem;
+}
+
+/* Input específico para filas (Legacy support actualizado) */
+.row-item__input {
+    /* Hereda estilos base pero fuerza ancho pequeño */
+    composes: input-base;
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Etiqueta pequeña para inputs verticales (ej. Ajustes Calculadora) */
+.row-item__label-mini {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+/* --- 5. TABLA MENÚ --- */
+
+.table-scroller {
+    overflow-x: auto;
+    background: var(--glass-dark);
+    border-radius: var(--ui-radius-md);
+    margin-bottom: var(--space-lg);
+}
+
+.menu-table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.menu-table th,
+.menu-table td,
+.menu-day-col {
+    padding: var(--space-md);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: left;
+    vertical-align: top;
+}
+
+.menu-day-col {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 220px;
+}
+
+.menu-table th {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    min-width: 120px;
+}
+
+.menu-table td {
+    min-width: 120px;
+}
+
+.menu-table td:nth-child(even) { background: rgba(255,255,255,0.02); }
+.menu-table tbody tr:last-child td { border-bottom: none; }
+
+/* Componentes internos de tabla */
+.meal-list { list-style: none; padding: 0; margin: 0; }
+.meal-list li { 
+    display: flex; justify-content: space-between; 
+    margin-bottom: 4px; 
+}
+.meal-list span { opacity: 0.6; font-size: 0.8em; margin-left: 8px; }
+
+.meal-macros { 
+    margin-top: 6px; 
+    font-size: 0.75rem; 
+    color: var(--color-text-muted); 
+    font-family: monospace;
+}
+
+.day-total {
+    background: rgba(0, 0, 0, 0.25) !important;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Semáforo */
+.total-low { color: #ffffff !important; opacity: 0.7; }
+.total-ok { color: #4caf50 !important; text-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
+.total-high { color: #ff9800 !important; text-shadow: 0 0 10px rgba(255, 152, 0, 0.4); }
+
+/* --- 6. TARJETAS DE ACTIVIDAD --- */
+
+.activity-card {
+    /* Hereda estilos base de .card arriba */
+    border-radius: var(--ui-radius-md); /* Override específico */
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.activity-card--active {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 15px rgba(255, 209, 102, 0.15);
+}
+
+.activity-header {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-primary);
+    opacity: 0.9;
+}
+
+.activity-main {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.activity-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.activity-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.stat-pill {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    white-space: nowrap;
+}
+
+.stat-pill--kcal {
+    background: rgba(255, 209, 102, 0.2);
+    color: var(--color-primary);
+    border: 1px solid rgba(255, 209, 102, 0.3);
+}
