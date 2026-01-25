@@ -1,50 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Semanal</title>
-    <link rel="stylesheet" href="../css/app.css">
-    <link rel="stylesheet" href="../css/components.css">
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#0f2027">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menú | SaludApp</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages/menu.css">
 </head>
 <body>
+  <div class="layout-container">
+    <a href="../index.html" class="btn btn--link">← Volver al Menú</a>
+    <h1 class="page-header">🍽️ Menú</h1>
 
-    <a href="../index.html" class="btn btn--link">← Volver</a>
-    <h1>Menú Semanal</h1>
-
-    <div class="table-scroller">
-        <table class="menu-table">
-            <thead>
-                <tr>
-                    <th>Día</th>
-                    <th>Desayuno</th>
-                    <th>Comida</th>
-                    <th>Cena</th>
-                    <th>Total Día</th>
-                </tr>
-            </thead>
-            <tbody id="menu-body"></tbody>
-        </table>
+    <div id="menu-container">
+      <table class="menu-table">
+        <tbody id="menu-body"></tbody>
+      </table>
     </div>
+  </div>
 
-    <!-- Core -->
-    <script src="../js/core/config.js"></script>
-    <script src="../js/core/storage.js"></script>
-    <script src="../js/core/ui.js"></script>
-    <script defer src="../js/core/pwa.js"></script>
+  <!-- Core -->
+  <script src="../js/core/config.js"></script>
+  <script src="../js/core/storage.js"></script>
+  <script src="../js/core/dom.js"></script>
+  <script src="../js/core/components.js"></script>
+  <script src="../js/core/ui.js"></script>
 
-    <!-- Data -->
-    <script src="../js/data/foods.js"></script>
-    <script src="../js/data/menu.js"></script>
-    <script src="../js/data/targets.js"></script>
+  <!-- Data -->
+  <script src="../js/data/foods.js"></script>
+  <script src="../js/data/menu.js"></script>
+  <script src="../js/data/targets.js"></script>
 
-    <!-- Core (depende de FOODS) -->
-    <script src="../js/core/nutrition.js"></script>
+  <!-- Core logic -->
+  <script src="../js/core/nutrition.js"></script>
 
-    <!-- Page -->
-    <script src="../js/pages/menu.page.js"></script>
-    <script src="../js/app.js"></script>
+  <!-- Page -->
+  <script src="../js/pages/menu.page.js"></script>
+  <script src="../js/app.js"></script>
 </body>
 </html>
