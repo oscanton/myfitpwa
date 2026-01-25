@@ -136,7 +136,7 @@ function renderCalculatorPage() {
             height: parseInt(document.getElementById('calc-height').value) || 0,
             weight: parseFloat(document.getElementById('calc-weight').value) || 0,
         };
-        DB.save('user_profile', userProfile);
+        DB.save('user_profile', profile);
 
         // 2. Leer y guardar ajustes
         ADJ_FIELDS.forEach(field => {
