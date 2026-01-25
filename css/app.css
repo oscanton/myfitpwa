@@ -71,6 +71,7 @@ body {
 .text-right { text-align: right; }
 .text-left { text-align: left; }
 .w-100 { width: 100%; }
+.w-auto { width: auto; }
 }
 
 /* =========================================

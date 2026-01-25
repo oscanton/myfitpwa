@@ -151,6 +151,13 @@
     background: rgba(0, 0, 0, 0.4);
 }
 
+/* Estilo consistente para spinners en inputs numéricos */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    opacity: 0.4;
+    margin-left: 4px;
+}
+
 /* Select con flecha personalizada */
 .input-select {
     appearance: none;
@@ -166,6 +173,35 @@
 .input-select option {
     background-color: #203a43;
     color: #fff;
+}
+
+/* Variante: Select Minimalista (para tablas/grids densos) */
+.input-minimal {
+    background-color: transparent;
+    border: none;
+    padding: 0 18px 0 4px; /* Espacio a la derecha para flecha */
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    text-align-last: center;
+    font-size: 0.9rem;
+    color: inherit;
+    background-position: right 0 center; /* Ajuste de flecha */
+}
+.input-minimal:focus {
+    outline: none;
+    background-color: rgba(255,255,255,0.05);
+}
+
+/* Variante: Select Inline (para cabeceras) */
+.input-inline {
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: var(--space-md);
+    padding: 6px 30px 6px 12px;
+    font-weight: normal;
+    font-size: 1rem;
 }
 
 /* Input específico para filas (Legacy support actualizado) */

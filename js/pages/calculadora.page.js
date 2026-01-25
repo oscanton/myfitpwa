@@ -33,7 +33,7 @@ function renderCalculatorPage() {
         <div class="section-group__grid">
             <div class="row-item">
                 <span class="row-item__title">Sexo</span>
-                <select id="calc-sex" class="input-base input-select" style="width: auto;">
+                <select id="calc-sex" class="input-base input-select w-auto">
                     <option value="hombre" ${userProfile.sex === 'hombre' ? 'selected' : ''}>Hombre</option>
                     <option value="mujer" ${userProfile.sex === 'mujer' ? 'selected' : ''}>Mujer</option>
                 </select>
@@ -92,7 +92,7 @@ function renderCalculatorPage() {
                     <div class="adj-col-header">${field.label}</div>
                     <div class="adj-data-cell" id="adj-base-${field.key}">-</div>
                     <div class="adj-data-cell">
-                        <select id="${field.id}" class="input-select text-center" style="border:none; background-color:transparent; padding-right:14px; background-position: right 0 center;">${generateOpts(adjustments[field.key])}</select>
+                        <select id="${field.id}" class="input-select input-minimal">${generateOpts(adjustments[field.key])}</select>
                     </div>
                     <div class="adj-data-cell adj-data-cell--highlight" id="adj-obj-${field.key}">-</div>
                 </div>
