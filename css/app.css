@@ -72,6 +72,10 @@ body {
 .text-left { text-align: left; }
 .w-100 { width: 100%; }
 .w-auto { width: auto; }
+.mt-lg { margin-top: var(--space-lg); }
+.my-sm { margin-top: var(--space-sm); margin-bottom: var(--space-sm); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.text-note { font-size: 0.75rem; margin-top: var(--space-sm); text-align: center; color: var(--color-text-muted); }
 }
 
 /* =========================================
@@ -117,6 +121,10 @@ h2 {
 .text-xs { font-size: 0.75rem; }
 .text-muted { color: var(--color-text-muted); }
 .text-primary { color: var(--color-primary); }
+
+.text-status--ok { color: var(--color-success); font-weight: bold; }
+.text-status--warning { color: var(--color-warning); font-weight: bold; }
+.text-status--danger { color: var(--color-danger); font-weight: bold; }
 }
 
 /* =========================================

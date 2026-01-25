@@ -36,8 +36,8 @@ function renderActivityPage() {
         card.innerHTML = `
             <div class="activity-header">${diaNombre} ${isActive ? ' (HOY)' : ''}</div>
             
-            <div style="margin: 8px 0;">
-                <select class="input-base input-select w-100" onchange="updateActivity(${index}, this.value)">
+            <div class="my-sm">
+                <select class="input-base input-select w-100" data-day-index="${index}">
                     ${options}
                 </select>
             </div>
@@ -49,6 +49,19 @@ function renderActivityPage() {
         
         container.appendChild(card);
     });
+
+    // 2. Delegación de eventos para los <select>
+    container.addEventListener('change', (e) => {
+        if (e.target.matches('select[data-day-index]')) {
+            const dayIndex = parseInt(e.target.dataset.dayIndex);
+            const type = e.target.value;
+            updateActivity(dayIndex, type);
+        }
+    });
+}
+
+function updateActivity(dayIndex, type) {
+    // Esta función ahora es local, no necesita estar en `window`.
 }
 
 // Función auxiliar para generar el contenido HTML de la rutina y los stats
@@ -82,7 +95,7 @@ function generateRoutineContent(type, profileData = null) {
             </div>
         `;
     } else {
-        statsHtml = `<div class="text-muted text-center" style="font-size:0.8rem; margin-top:10px; opacity:0.7;">Configura la calculadora para ver macros</div>`;
+        statsHtml = `<div class="text-muted text-center text-sm mt-lg" style="opacity:0.7;">Configura la calculadora para ver macros</div>`;
     }
 
     return `
@@ -93,8 +106,7 @@ function generateRoutineContent(type, profileData = null) {
     `;
 }
 
-// Función global para actualizar la tarjeta al cambiar el select
-window.updateActivity = function(dayIndex, type) {
+function updateActivity(dayIndex, type) {
     // 3. Guardado sincronizado: Actualizamos el array completo del plan
     const weeklyPlan = DB.get('user_activity_plan', Array(7).fill('descanso'));
     weeklyPlan[dayIndex] = type;
@@ -109,4 +121,4 @@ window.updateActivity = function(dayIndex, type) {
 
         contentDiv.innerHTML = generateRoutineContent(type);
     }
-};
+}

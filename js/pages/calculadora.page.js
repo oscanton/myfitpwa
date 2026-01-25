@@ -57,7 +57,7 @@ function renderCalculatorPage() {
     // --- SECCIÓN 2: RESULTADOS BASE (IMC, BMR, REPOSO) ---
     const baseResultsCard = document.createElement('div');
     baseResultsCard.className = 'card';
-    baseResultsCard.style.marginTop = 'var(--space-lg)';
+    baseResultsCard.classList.add('mt-lg');
     // Se rellena en updateAndCalculate
     container.appendChild(baseResultsCard);
 
@@ -65,7 +65,7 @@ function renderCalculatorPage() {
     const adjustmentsCard = document.createElement('div');
     adjustmentsCard.className = 'card';
     adjustmentsCard.style.marginTop = 'var(--space-lg)';
-    
+    adjustmentsCard.classList.add('mt-lg');
     // Helper para generar opciones (-20% a +20%)
     const generateOpts = (val) => {
         const steps = [0.20, 0.15, 0.10, 0.05, 0, -0.05, -0.10, -0.15, -0.20];
@@ -98,7 +98,7 @@ function renderCalculatorPage() {
                 </div>
             `).join('')}
         </div>
-        <div class="text-muted text-center" style="margin-top: 8px; font-size: 0.75rem;">
+        <div class="text-note">
             * Base calculada sobre Reposo (Sedentario)
         </div>
     `;
@@ -107,7 +107,7 @@ function renderCalculatorPage() {
     // --- SECCIÓN 5: OBJETIVOS SEMANALES ---
     const weeklyGoalsCard = document.createElement('div');
     weeklyGoalsCard.className = 'card';
-    weeklyGoalsCard.style.marginTop = 'var(--space-lg)';
+    weeklyGoalsCard.classList.add('mt-lg');
     weeklyGoalsCard.innerHTML = `
         <h2>Objetivos Semanales</h2>
         <div id="daily-results-grid" class="stack-vertical"></div>
@@ -118,7 +118,7 @@ function renderCalculatorPage() {
     
     // Helper para renderizar pills de macros
     const renderMacroPills = (vals) => `
-        <div class="stats-pills stats-pills--center" style="width: 100%;">
+        <div class="stats-pills stats-pills--center w-100">
             <div class="stat-pill stat-pill--kcal">🔥 ${vals.kcal} kcal</div>
             <div class="stat-pill">🥩 ${vals.p}g</div>
             <div class="stat-pill">🍚 ${vals.c}g</div>
@@ -126,112 +126,105 @@ function renderCalculatorPage() {
         </div>
     `;
 
-    const updateAndCalculate = () => {
-        // Guardar Perfil
-        userProfile.sex = document.getElementById('calc-sex').value;
-        userProfile.age = parseInt(document.getElementById('calc-age').value) || 0;
-        userProfile.height = parseInt(document.getElementById('calc-height').value) || 0;
-        userProfile.weight = parseFloat(document.getElementById('calc-weight').value) || 0;
+    // --- LÓGICA DE CÁLCULO Y RENDERIZADO (REFACTORIZADA) ---
+
+    const readAndSaveInputs = () => {
+        // 1. Leer y guardar perfil
+        const profile = {
+            sex: document.getElementById('calc-sex').value,
+            age: parseInt(document.getElementById('calc-age').value) || 0,
+            height: parseInt(document.getElementById('calc-height').value) || 0,
+            weight: parseFloat(document.getElementById('calc-weight').value) || 0,
+        };
         DB.save('user_profile', userProfile);
 
-        // Guardar Ajustes
+        // 2. Leer y guardar ajustes
         ADJ_FIELDS.forEach(field => {
             adjustments[field.key] = parseFloat(document.getElementById(field.id).value);
         });
         DB.save('user_adjustments', adjustments);
 
-        // Usar Fórmulas del Core
-        const imc = Formulas.calcIMC(userProfile.weight, userProfile.height);
-        const imcData = Formulas.getIMCCategory(imc);
-        const bmr = Formulas.calcBMR(userProfile.weight, userProfile.height, userProfile.age, userProfile.sex);
+        return { profile, adjustments };
+    };
 
-        // Helper de cálculo ajustado
-        const getAdjustedValues = (baseKcal, activityKey, customAdj = adjustments) => {
-            const targetKcal = baseKcal * (1 + customAdj.kcal);
-            const m = Formulas.calcMacros(targetKcal, activityKey);
-            
-            const p = Math.round(m.p * (1 + customAdj.p));
-            const c = Math.round(m.c * (1 + customAdj.c));
-            const f = Math.round(m.f * (1 + customAdj.f));
-            
-            const finalKcal = (p * 4) + (c * 4) + (f * 9);
-            
-            const pct = {
-                p: finalKcal ? Math.round(p * 4 / finalKcal * 100) : 0,
-                c: finalKcal ? Math.round(c * 4 / finalKcal * 100) : 0,
-                f: finalKcal ? Math.round(f * 9 / finalKcal * 100) : 0
-            };
-            
-            return { p, c, f, pct, kcal: finalKcal };
-        };
-
-        // --- RESULTADOS BASE ---
-        const restKcal = Math.round(bmr * 1.2); // Factor sedentario
+    const getAdjustedValues = (baseKcal, activityKey, customAdj) => {
+        const targetKcal = baseKcal * (1 + customAdj.kcal);
+        const m = Formulas.calcMacros(targetKcal, activityKey);
         
-        // Actualizar Tabla de Ajustes (Base vs Objetivo)
-        const zeroAdj = { kcal: 0, p: 0, c: 0, f: 0 };
-        const tableBaseVals = getAdjustedValues(restKcal, 'descanso', zeroAdj);
-        const tableObjVals = getAdjustedValues(restKcal, 'descanso'); // Usa adjustments actuales
+        const p = Math.round(m.p * (1 + customAdj.p));
+        const c = Math.round(m.c * (1 + customAdj.c));
+        const f = Math.round(m.f * (1 + customAdj.f));
+        
+        const finalKcal = (p * 4) + (c * 4) + (f * 9);
+        
+        return { p, c, f, kcal: Math.round(finalKcal) };
+    };
 
-        const updateTableVal = (prefix, vals) => {
-            const setVal = (k, v) => { const el = document.getElementById(`${prefix}-${k}`); if(el) el.textContent = v; };
-            setVal('kcal', vals.kcal);
-            setVal('p', vals.p + 'g');
-            setVal('c', vals.c + 'g');
-            setVal('f', vals.f + 'g');
-        };
-        updateTableVal('adj-base', tableBaseVals);
-        updateTableVal('adj-obj', tableObjVals);
-
+    const renderBaseResults = (profile) => {
+        const imc = Formulas.calcIMC(profile.weight, profile.height);
+        const imcData = Formulas.getIMCCategory(imc);
+        const bmr = Formulas.calcBMR(profile.weight, profile.height, profile.age, profile.sex);
+        
         baseResultsCard.innerHTML = `
             <h2>Resultados Base</h2>
             <div class="calc-grid-2">
-                <!-- IMC -->
                 <div class="card-panel">
                     <div class="text-label">IMC</div>
                     <div class="text-value ${imcData.className}">${imc}</div>
                     <div class="text-sm text-muted ${imcData.className}" style="margin-top:auto;">${imcData.label}</div>
                 </div>
-                
-                <!-- BMR -->
                 <div class="card-panel">
                     <div class="text-label">BMR</div>
-                    <div class="stats-pills stats-pills--center" style="margin: 8px 0;">
+                    <div class="stats-pills stats-pills--center my-sm">
                         <div class="stat-pill stat-pill--kcal">🔥 ${bmr} kcal</div>
                     </div>
                     <div class="text-sm text-muted" style="margin-top:auto;">Basal</div>
                 </div>
             </div>
         `;
+        return bmr;
+    };
 
-        // --- RESULTADOS DIARIOS (OBJETIVOS) ---
+    const renderAdjustmentsTable = (bmr, adjustments) => {
+        const restKcal = Math.round(bmr * 1.2); // Factor sedentario
+        const zeroAdj = { kcal: 0, p: 0, c: 0, f: 0 };
+
+        const baseVals = getAdjustedValues(restKcal, 'descanso', zeroAdj);
+        const objectiveVals = getAdjustedValues(restKcal, 'descanso', adjustments);
+
+        const updateCell = (prefix, vals) => {
+            document.getElementById(`${prefix}-kcal`).textContent = vals.kcal;
+            document.getElementById(`${prefix}-p`).textContent = `${vals.p}g`;
+            document.getElementById(`${prefix}-c`).textContent = `${vals.c}g`;
+            document.getElementById(`${prefix}-f`).textContent = `${vals.f}g`;
+        };
+
+        updateCell('adj-base', baseVals);
+        updateCell('adj-obj', objectiveVals);
+    };
+
+    const renderWeeklyGoals = (bmr, adjustments) => {
         const dailyGrid = document.getElementById('daily-results-grid');
         dailyGrid.innerHTML = '';
-
         const dailyTargets = {};
 
         DIAS_SEMANA.forEach((day, index) => {
             const activityKey = weeklyPlan[index];
-            
-            // UNIFICACIÓN: Usamos el multiplicador centralizado de Formulas, igual que en Actividad
             const factor = Formulas.ACTIVITY_MULTIPLIERS[activityKey] || 1.2;
-
-            // Cálculo con ajuste
             const tdee = bmr * factor;
-            const dayVals = getAdjustedValues(tdee, activityKey);
+            const dayVals = getAdjustedValues(tdee, activityKey, adjustments);
 
             dailyTargets[day] = {
                 kcal: dayVals.kcal,
                 protein: dayVals.p,
                 carbs: dayVals.c,
-                fat: dayVals.f
+                fat: dayVals.f,
             };
 
             const dayCard = document.createElement('div');
             dayCard.className = 'row-item daily-result-card';
-            
             dayCard.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div class="w-100" style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="row-item__title">${day}</div>
                     <div class="row-item__subtitle" style="margin-top: 0;">${(ACTIVITY_CATALOG[activityKey] || {}).label || activityKey}</div>
                 </div>
@@ -240,8 +233,16 @@ function renderCalculatorPage() {
             dailyGrid.appendChild(dayCard);
         });
 
-        // Guardamos los objetivos calculados en la DB para que el Menú pueda leerlos
         DB.save('daily_nutrition_targets', dailyTargets);
+    };
+
+    const updateAndCalculate = () => {
+        const { profile, adjustments } = readAndSaveInputs();
+        const bmr = renderBaseResults(profile);
+        if (bmr > 0) {
+            renderAdjustmentsTable(bmr, adjustments);
+            renderWeeklyGoals(bmr, adjustments);
+        }
     };
 
     // Listeners

@@ -228,6 +228,16 @@ input[type=number]::-webkit-outer-spin-button {
     background: var(--glass-dark);
     border-radius: var(--ui-radius-md);
     margin-bottom: var(--space-lg);
+    position: relative; /* Para el botón de edición */
+}
+
+.table-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
 }
 
 .menu-table {
@@ -267,12 +277,25 @@ input[type=number]::-webkit-outer-spin-button {
 .menu-table tbody tr:last-child td { border-bottom: none; }
 
 /* Componentes internos de tabla */
-.meal-list { list-style: none; padding: 0; margin: 0; }
-.meal-list li { 
-    display: flex; justify-content: space-between; 
-    margin-bottom: 4px; 
+.meal-list { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
 }
-.meal-list span { opacity: 0.6; font-size: 0.8em; margin-left: 8px; }
+.meal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+}
+.meal-item__name { margin-right: var(--space-sm); }
+.meal-item__amount { white-space: nowrap; display: flex; align-items: center; }
+.meal-item__unit { margin-left: 4px; opacity: 0.8; font-size: 0.85rem; }
+
+.meal-list span { opacity: 0.6; font-size: 0.8em; }
 
 .meal-macros { 
     margin-top: 6px; 
@@ -281,10 +304,34 @@ input[type=number]::-webkit-outer-spin-button {
     font-family: monospace;
 }
 
+.meal-description {
+    margin-top: 4px;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    font-style: italic;
+    line-height: 1.2;
+}
+
 .day-total {
     background: rgba(0, 0, 0, 0.25) !important;
     border-radius: 8px;
     padding: 10px;
+}
+
+.day-total__main-value { font-size: 1.1rem; }
+.day-total__target-value { color: #fff; opacity: 0.3; font-weight: 300; }
+.day-total__label { font-size:0.6rem; opacity:0.5; margin-bottom:8px; text-transform: uppercase; }
+.day-total__macros {
+    font-family: monospace; 
+    font-size: 0.8rem; 
+    border-top: 1px solid rgba(255,255,255,0.1); 
+    padding-top: 6px; 
+    line-height: 1.6;
+}
+
+/* Input para edición en tabla */
+.input-base--table-edit {
+    width: 65px; padding: 4px 2px; font-size: 0.9rem; text-align: right; display: inline-block;
 }
 
 /* Semáforo */

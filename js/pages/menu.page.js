@@ -16,10 +16,12 @@ function renderMenuPage() {
         if (table) container = table.parentElement;
     }
 
-    // --- Helpers Locales (Definidos dentro para evitar conflictos de redeclaración) ---
+    // --- Helpers Locales ---
+    // NOTA: Idealmente, `calculateMeal` debería estar en un módulo central como `core/formulas.js`
+    // para ser reutilizado en otras partes de la aplicación.
     const NUTRITION = {
         calculateMeal: (items) => {
-            let total = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+            const total = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
             if (!items || !Array.isArray(items)) return total;
             
             items.forEach(item => {
@@ -56,22 +58,11 @@ function renderMenuPage() {
     const getStatusClass = (current, target) => {
         if (!target || target === 0) return '';
         const pct = (current / target) * 100;
-        if (pct > 110) return 'status-danger'; 
-        if (pct < 90) return 'status-warning'; 
-        return 'status-ok'; 
+        if (pct > 110) return 'text-status--danger'; 
+        if (pct < 90) return 'text-status--warning'; 
+        return 'text-status--ok'; 
     };
 
-    // Inyectar estilos para los estados si no existen
-    if (!document.getElementById('menu-styles')) {
-        const style = document.createElement('style');
-        style.id = 'menu-styles';
-        style.innerHTML = `
-            .status-ok { color: var(--color-success); font-weight: bold; }
-            .status-warning { color: var(--color-warning); font-weight: bold; }
-            .status-danger { color: var(--color-danger); font-weight: bold; }
-        `;
-        document.head.appendChild(style);
-    }
 
     // Configuración de archivos disponibles
     // NOTA: Para añadir más menús, crea el archivo en js/data/ y regístralo aquí.
@@ -121,13 +112,7 @@ function renderMenuPage() {
     // --- Inyectar Selector en el Título (H1) ---
     const h1 = document.querySelector('h1');
     if (h1 && !document.getElementById('menu-controls')) {
-        const wrapper = document.createElement('div');
-        wrapper.id = 'menu-controls';
-        wrapper.style.display = 'flex';
-        wrapper.style.gap = '8px';
-        wrapper.style.alignItems = 'center';
-        wrapper.style.marginLeft = '10px';
-
+        h1.classList.add('table-controls');
         const options = AVAILABLE_MENUS.map(m => 
             `<option value="${m.file}" ${m.file === currentFile ? 'selected' : ''}>${m.label}</option>`
         ).join('');
@@ -143,20 +128,14 @@ function renderMenuPage() {
             loadMenuData(newFile); // Carga directa sin reload
         });
 
-        wrapper.appendChild(select);
-        
-        h1.style.display = 'flex';
-        h1.style.justifyContent = 'center';
-        h1.style.alignItems = 'center';
-        h1.style.flexWrap = 'wrap';
-        h1.appendChild(wrapper);
+        h1.appendChild(select);
     }
 
     // --- Botón de Edición (Debajo de la tabla) ---
     if (container && !document.getElementById('menu-edit-btn')) {
         const btnContainer = document.createElement('div');
         btnContainer.className = 'text-center';
-        btnContainer.style.marginTop = 'var(--space-lg)';
+        btnContainer.classList.add('mt-lg');
         
         const editBtn = document.createElement('button');
         editBtn.id = 'menu-edit-btn';
@@ -166,8 +145,7 @@ function renderMenuPage() {
         editBtn.onclick = () => {
             isEditMode = !isEditMode;
             editBtn.innerHTML = isEditMode ? '✅ Listo' : '✏️ Editar Menú';
-            editBtn.style.borderColor = isEditMode ? 'var(--color-success)' : '';
-            editBtn.style.color = isEditMode ? 'var(--color-success)' : '';
+            editBtn.classList.toggle('btn--success', isEditMode); // Asume que tienes o crearás esta clase
             renderTableContent();
         };
 
@@ -188,24 +166,24 @@ function renderMenuPage() {
         const classFat  = getStatusClass(dayTotals.fat, tFat);
 
         return `
-            <div style="font-size: 1.1rem;">
+            <div class="day-total__main-value">
                 <span class="${classKcal}">${Math.round(dayTotals.kcal)}</span>
-                <span style="color: #fff; opacity: 0.3; font-weight: 300;"> / ${tKcal}</span>
+                <span class="day-total__target-value"> / ${tKcal}</span>
             </div>
-            <div style="font-size:0.6rem; opacity:0.5; margin-bottom:8px; text-transform: uppercase;">Kcal Totales</div>
+            <div class="day-total__label">Kcal Totales</div>
 
-            <div style="font-family: monospace; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px; line-height: 1.6;">
+            <div class="day-total__macros">
                 <div>
                     P: <span class="${classProt}">${Math.round(dayTotals.protein)}</span>
-                    <span style="opacity:0.3; font-weight: 300;"> / ${tProt}</span>
+                    <span class="day-total__target-value"> / ${tProt}</span>
                 </div>
                 <div>
                     C: <span class="${classCarb}">${Math.round(dayTotals.carbs)}</span>
-                    <span style="opacity:0.3; font-weight: 300;"> / ${tCarb}</span>
+                    <span class="day-total__target-value"> / ${tCarb}</span>
                 </div>
                 <div>
                     G: <span class="${classFat}">${Math.round(dayTotals.fat)}</span>
-                    <span style="opacity:0.3; font-weight: 300;"> / ${tFat}</span>
+                    <span class="day-total__target-value"> / ${tFat}</span>
                 </div>
             </div>`;
     };
@@ -259,26 +237,25 @@ function renderMenuPage() {
                             let amountHtml;
                             if (isEditMode) {
                                 amountHtml = `<input type="text" inputmode="decimal" value="${i.amount}" 
-                                    class="input-base" 
-                                    style="width: 65px; padding: 4px 2px; font-size: 0.9rem; text-align: right; display: inline-block;"
+                                    class="input-base input-base--table-edit" 
                                     data-day="${dayIndex}" data-meal="${mealKey}" data-item="${itemIndex}">`;
                             } else {
-                                amountHtml = `<span style="font-size: 0.9rem; font-weight: 500;">${i.amount}</span>`;
+                                amountHtml = `<span>${i.amount}</span>`;
                             }
-                            return `<li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 1rem;">
-                                <span style="margin-right: 8px;">${f ? f.name : i.foodId}</span>
-                                <div style="white-space: nowrap; display: flex; align-items: center;">
+                            return `<li class="meal-item">
+                                <span class="meal-item__name">${f ? f.name : i.foodId}</span>
+                                <div class="meal-item__amount">
                                     ${amountHtml}
-                                    <span style="margin-left: 4px; opacity: 0.8; font-size: 0.85rem;">${f ? f.unit : ''}</span>
+                                    <span class="meal-item__unit">${f ? f.unit : ''}</span>
                                 </div>
                             </li>`;
                         }).join('')}
                     </ul>
                     <div class="meal-macros" id="macros-${dayIndex}-${mealKey}">
-                        <span style="color:var(--color-primary)">${Math.round(nut.kcal)} kcal</span> |
+                        <span class="text-primary">${Math.round(nut.kcal)} kcal</span> |
                         P: ${Math.round(nut.protein)} | C: ${Math.round(nut.carbs)} | G: ${Math.round(nut.fat)}
                     </div>
-                    <div style="margin-top:4px; font-size:0.7rem; color:rgba(255,255,255,0.5); font-style:italic; line-height:1.2;">
+                    <div class="meal-description">
                         ${mealData.description || ''}
                     </div>
                 </td>`;
@@ -322,7 +299,7 @@ function renderMenuPage() {
                 const mealMacroDiv = document.getElementById(`macros-${dayIndex}-${mealKey}`);
                 if (mealMacroDiv) {
                     mealMacroDiv.innerHTML = `
-                        <span style="color:var(--color-primary)">${Math.round(mealNut.kcal)} kcal</span> |
+                        <span class="text-primary">${Math.round(mealNut.kcal)} kcal</span> |
                         P: ${Math.round(mealNut.protein)} | C: ${Math.round(mealNut.carbs)} | G: ${Math.round(mealNut.fat)}
                     `;
                 }
