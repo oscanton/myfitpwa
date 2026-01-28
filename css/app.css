@@ -76,7 +76,8 @@ body {
 .my-sm { margin-top: var(--space-sm); margin-bottom: var(--space-sm); }
 .mb-sm { margin-bottom: var(--space-sm); }
 .text-note { font-size: 0.75rem; margin-top: var(--space-sm); text-align: center; color: var(--color-text-muted); }
-}
+.opacity-70 { opacity: 0.7; }
+.p-lg { padding: var(--space-lg); }
 
 /* =========================================
    TIPOGRAFÍA GLOBAL
@@ -88,6 +89,15 @@ h1 {
     font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: -0.5px;
+}
+
+.menu-label {
+    font-size: 0.6em;
+    color: var(--color-primary);
+    vertical-align: middle;
+    margin-left: var(--space-sm);
+    opacity: 0.8;
+    font-weight: 500;
 }
 
 h2 {
@@ -125,7 +135,6 @@ h2 {
 .text-status--ok { color: var(--color-success); font-weight: bold; }
 .text-status--warning { color: var(--color-warning); font-weight: bold; }
 .text-status--danger { color: var(--color-danger); font-weight: bold; }
-}
 
 /* =========================================
    LAYOUT UTILS

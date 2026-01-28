@@ -60,10 +60,6 @@ function renderActivityPage() {
     });
 }
 
-function updateActivity(dayIndex, type) {
-    // Esta función ahora es local, no necesita estar en `window`.
-}
-
 // Función auxiliar para generar el contenido HTML de la rutina y los stats
 function generateRoutineContent(type, profileData = null) {
     const rutina = RUTINAS[type] || RUTINAS['descanso'];
@@ -95,12 +91,12 @@ function generateRoutineContent(type, profileData = null) {
             </div>
         `;
     } else {
-        statsHtml = `<div class="text-muted text-center text-sm mt-lg" style="opacity:0.7;">Configura la calculadora para ver macros</div>`;
+        statsHtml = `<div class="text-muted text-center text-sm mt-lg opacity-70">Configura la calculadora para ver macros</div>`;
     }
 
     return `
         <div class="activity-main">${rutina.titulo}</div>
-        <div style="font-size: 0.9rem; margin-top: 4px; opacity: 0.9;">${rutina.ejercicios}</div>
+        <div class="activity-exercises">${rutina.ejercicios}</div>
         ${statsHtml}
         <div class="activity-desc">${rutina.explicacion}</div>
     `;

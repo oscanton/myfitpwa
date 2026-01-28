@@ -64,15 +64,6 @@ function renderMenuPage() {
     };
 
 
-    // Configuración de archivos disponibles
-    // NOTA: Para añadir más menús, crea el archivo en js/data/ y regístralo aquí.
-    // Importante: El archivo nuevo debe empezar con window.MENU_DATA = [...]
-    const AVAILABLE_MENUS = [
-        { label: 'menu', file: 'menu.js' },
-        { label: 'menu_1', file: 'menu_1.js' },
-        // { label: 'menu_2', file: 'menu_2.js' }, // Ejemplo para futuros archivos
-    ];
-
     let currentFile = DB.get('selected_menu_file', 'menu.js');
 
     // --- Función para Cargar Datos (Hot-Swap) ---
@@ -103,7 +94,7 @@ function renderMenuPage() {
         };
         
         script.onerror = () => {
-            tableBody.innerHTML = `<tr><td colspan="3" style="color:var(--color-danger)">Error cargando ${fileName}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="3" class="text-status--danger text-center">Error cargando ${fileName}</td></tr>`;
         };
         
         document.body.appendChild(script);
@@ -274,7 +265,7 @@ function renderMenuPage() {
     });
         } catch (error) {
             console.error("Error renderizando el menú:", error);
-            tableBody.innerHTML = `<tr><td colspan="3" style="padding: 20px; text-align: center; color: var(--color-danger);">Error cargando los datos: ${error.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="3" class="text-status--danger text-center p-lg">Error cargando los datos: ${error.message}</td></tr>`;
         }
     };
 
