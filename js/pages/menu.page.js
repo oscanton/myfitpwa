@@ -234,7 +234,7 @@ function renderMenuPage() {
                                 amountHtml = `<span>${i.amount}</span>`;
                             }
                             return `<li class="meal-item">
-                                <span class="meal-item__name">${f ? f.name : i.foodId}</span>
+                                <span class="meal-item__name food-info-trigger" data-food-id="${i.foodId}">${f ? f.name : i.foodId}</span>
                                 <div class="meal-item__amount">
                                     ${amountHtml}
                                     <span class="meal-item__unit">${f ? f.unit : ''}</span>
@@ -269,7 +269,60 @@ function renderMenuPage() {
         }
     };
 
-    // --- 3. Event Delegation para Inputs (Edición) ---
+    // --- 3. Event Delegation ---
+
+    // A) Popup de Info Nutricional (Click en alimento)
+    tableBody.addEventListener('click', (e) => {
+        if (e.target.classList.contains('food-info-trigger')) {
+            const foodId = e.target.dataset.foodId;
+            
+            if (typeof FOODS === 'undefined') return;
+            const food = FOODS[foodId];
+            if (!food) return;
+
+            // Eliminar popup previo si existe
+            const existing = document.getElementById('food-popup');
+            if (existing) existing.remove();
+
+            // Determinar valores a mostrar
+            let vals = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+            let label = '';
+            if (food.nutritionPer100) {
+                vals = food.nutritionPer100;
+                label = 'Valores por 100g';
+            } else if (food.nutritionPerUnit) {
+                vals = food.nutritionPerUnit;
+                label = 'Valores por Unidad';
+            }
+
+            const modal = document.createElement('div');
+            modal.id = 'food-popup';
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h3 class="text-primary" style="margin-top:0">${food.name}</h3>
+                    <div class="text-xs text-muted mb-sm">${label}</div>
+                    
+                    <div class="stats-pills stats-pills--center my-sm">
+                        <div class="stat-pill stat-pill--kcal" style="font-size:1.1rem">🔥 ${vals.kcal}</div>
+                    </div>
+
+                    <div class="section-group__grid" style="grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:16px;">
+                        <div class="card-panel" style="padding:8px"><div class="text-xs text-muted">Prot</div><div class="text-lg">🥩 ${vals.protein}</div></div>
+                        <div class="card-panel" style="padding:8px"><div class="text-xs text-muted">Carb</div><div class="text-lg">🍚 ${vals.carbs}</div></div>
+                        <div class="card-panel" style="padding:8px"><div class="text-xs text-muted">Grasa</div><div class="text-lg">🥑 ${vals.fat}</div></div>
+                    </div>
+
+                    <button class="btn btn--primary" style="margin-bottom:0; padding:10px">Cerrar</button>
+                </div>
+            `;
+            
+            modal.addEventListener('click', (ev) => { if (ev.target === modal || ev.target.closest('.btn')) modal.remove(); });
+            document.body.appendChild(modal);
+        }
+    });
+
+    // B) Inputs (Edición)
     tableBody.addEventListener('input', (e) => {
         if (e.target.tagName === 'INPUT' && e.target.dataset.day) {
             const dayIndex = parseInt(e.target.dataset.day);
