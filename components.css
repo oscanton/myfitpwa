@@ -335,7 +335,7 @@ input[type=number]::-webkit-outer-spin-button {
 .menu-table th {
     color: var(--color-primary);
     font-size: 1.2rem;
-    min-width: 320px;
+    min-width: 350px;
     text-align: center;
     font-weight: normal;
 }
@@ -345,7 +345,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .menu-table td {
-    min-width: 320px;
+    min-width: 350px;
 }
 
 .menu-table td:nth-child(even) { background: rgba(255,255,255,0.02); }
