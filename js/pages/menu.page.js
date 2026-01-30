@@ -119,11 +119,11 @@ function renderMenuPage() {
         editBtn.id = 'menu-edit-btn';
         editBtn.className = 'btn-back'; // Estilo unificado
         editBtn.style.cursor = 'pointer';
-        editBtn.innerHTML = '✏️ Editar Menú';
+        editBtn.innerHTML = '✏️ Editar';
         
         editBtn.onclick = () => {
             isEditMode = !isEditMode;
-            editBtn.innerHTML = isEditMode ? '✅ Listo' : '✏️ Editar Menú';
+            editBtn.innerHTML = isEditMode ? '✅ Listo' : '✏️ Editar';
             
             if (isEditMode) {
                 editBtn.style.background = 'rgba(255, 209, 102, 0.2)';
@@ -139,13 +139,13 @@ function renderMenuPage() {
         const resetBtn = document.createElement('button');
         resetBtn.className = 'btn-back';
         resetBtn.style.cursor = 'pointer';
-        resetBtn.innerHTML = '🔄 Restablecer';
+        resetBtn.innerHTML = '🔄 Resset';
         resetBtn.onclick = () => {
             if (confirm("¿Restablecer el menú original? Se perderán los cambios.")) {
                 localStorage.removeItem(APP_PREFIX + `menu_data_${currentFile}`);
                 if (isEditMode) {
                     isEditMode = false;
-                    editBtn.innerHTML = '✏️ Editar Menú';
+                    editBtn.innerHTML = '✏️ Editar';
                     editBtn.style.background = '';
                     editBtn.style.borderColor = '';
                 }
@@ -353,10 +353,11 @@ function renderMenuPage() {
                     const scroller = table.parentElement;
                     // +1 porque la primera columna es el encabezado de fila
                     const targetTh = table.querySelectorAll('thead th')[todayIndex + 1];
+                    const stickyTh = table.querySelector('thead th');
                     
-                    if (targetTh) {
-                        // Ajuste de centrado: +30px para desplazar la columna ligeramente a la izquierda
-                        const scrollLeft = targetTh.offsetLeft - (scroller.clientWidth / 2) + (targetTh.clientWidth / 2) + 30;
+                    if (targetTh && stickyTh) {
+                        // Alinear a la izquierda justo después de la columna sticky
+                        const scrollLeft = targetTh.offsetLeft - stickyTh.offsetWidth;
                         scroller.scrollTo({ left: scrollLeft, behavior: 'smooth' });
                     }
                 }
