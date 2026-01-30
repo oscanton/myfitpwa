@@ -139,7 +139,7 @@ function renderMenuPage() {
         const resetBtn = document.createElement('button');
         resetBtn.className = 'btn-back';
         resetBtn.style.cursor = 'pointer';
-        resetBtn.innerHTML = '🔄 Resset';
+        resetBtn.innerHTML = '🔄 Reset';
         resetBtn.onclick = () => {
             if (confirm("¿Restablecer el menú original? Se perderán los cambios.")) {
                 localStorage.removeItem(APP_PREFIX + `menu_data_${currentFile}`);
@@ -239,13 +239,43 @@ function renderMenuPage() {
         const table = tableBody.closest('table');
         const thead = table.querySelector('thead');
         if (thead) {
-            // Generar Selector
-            const options = AVAILABLE_MENUS.map(m => 
-                `<option value="${m.file}" ${m.file === currentFile ? 'selected' : ''}>${m.label}</option>`
-            ).join('');
-            const selectHtml = `<select id="menu-select" class="input-base input-select" style="width:100%; font-size:0.85rem; padding:4px 20px 4px 8px;">${options}</select>`;
+            // Mover Selector al H1
+            const h1 = document.querySelector('h1');
+            if (h1) {
+                // Flexbox para alineación vertical centrada
+                h1.style.display = 'flex';
+                h1.style.justifyContent = 'center';
+                h1.style.alignItems = 'center';
+                h1.style.gap = '12px';
 
-            let headerHtml = `<tr><th class="menu-row-header" style="padding: var(--space-xs);">${selectHtml}</th>`;
+                let selectWrapper = document.getElementById('menu-select-wrapper');
+                if (!selectWrapper) {
+                    selectWrapper = document.createElement('span');
+                    selectWrapper.id = 'menu-select-wrapper';
+                    h1.appendChild(selectWrapper);
+                }
+
+                const options = AVAILABLE_MENUS.map(m => 
+                    `<option value="${m.file}" ${m.file === currentFile ? 'selected' : ''}>${m.label}</option>`
+                ).join('');
+                
+                // Estilo ajustado para estar inline en el título
+                selectWrapper.innerHTML = `<select id="menu-select" class="input-base input-select" style="width:auto; font-size:0.5em; padding:4px 24px 4px 8px;">${options}</select>`;
+
+                // Event Listener
+                const select = document.getElementById('menu-select');
+                if (select) {
+                    select.addEventListener('change', (e) => {
+                        const newFile = e.target.value;
+                        currentFile = newFile;
+                        DB.save('selected_menu_file', newFile);
+                        loadMenuData(newFile);
+                    });
+                }
+            }
+
+            // Celda vacía en la esquina
+            let headerHtml = `<tr><th class="menu-row-header" style="padding: var(--space-xs);"></th>`;
             currentData.forEach((day, index) => {
                 const isToday = index === todayIndex;
                 const activeClass = isToday ? 'text-status--ok' : '';
@@ -253,17 +283,6 @@ function renderMenuPage() {
             });
             headerHtml += '</tr>';
             thead.innerHTML = headerHtml;
-
-            // Event Listener
-            const select = document.getElementById('menu-select');
-            if (select) {
-                select.addEventListener('change', (e) => {
-                    const newFile = e.target.value;
-                    currentFile = newFile;
-                    DB.save('selected_menu_file', newFile);
-                    loadMenuData(newFile);
-                });
-            }
         }
 
         tableBody.innerHTML = "";
