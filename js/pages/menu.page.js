@@ -16,6 +16,11 @@ function renderMenuPage() {
         if (table) container = table.parentElement;
     }
 
+    // Limitar ancho igual que las otras páginas
+    if (container) {
+        container.classList.add('layout-container');
+    }
+
     // --- Helpers Locales ---
     // NOTA: Idealmente, `calculateMeal` debería estar en un módulo central como `core/formulas.js`
     // para ser reutilizado en otras partes de la aplicación.
@@ -100,48 +105,80 @@ function renderMenuPage() {
         document.body.appendChild(script);
     };
 
-    // --- Inyectar Selector en el Título (H1) ---
-    const h1 = document.querySelector('h1');
-    if (h1 && !document.getElementById('menu-controls')) {
-        h1.classList.add('table-controls');
-        const options = AVAILABLE_MENUS.map(m => 
-            `<option value="${m.file}" ${m.file === currentFile ? 'selected' : ''}>${m.label}</option>`
-        ).join('');
-
-        const select = document.createElement('select');
-        select.id = 'menu-select';
-        select.className = 'input-base input-select input-inline';
-        select.innerHTML = options;
-        select.addEventListener('change', (e) => {
-            const newFile = e.target.value;
-            currentFile = newFile;
-            DB.save('selected_menu_file', newFile);
-            loadMenuData(newFile); // Carga directa sin reload
-        });
-
-        h1.appendChild(select);
-    }
-
-    // --- Botón de Edición (Debajo de la tabla) ---
-    if (container && !document.getElementById('menu-edit-btn')) {
+    // --- Botones de Control (Debajo de la tabla) ---
+    if (container && !document.getElementById('menu-controls-container')) {
         const btnContainer = document.createElement('div');
-        btnContainer.className = 'text-center';
-        btnContainer.classList.add('mt-lg');
+        btnContainer.id = 'menu-controls-container';
+        btnContainer.className = 'text-center mt-lg';
+        btnContainer.style.display = 'flex';
+        btnContainer.style.justifyContent = 'center';
+        btnContainer.style.gap = '12px';
         
+        // Botón Editar
         const editBtn = document.createElement('button');
         editBtn.id = 'menu-edit-btn';
-        editBtn.className = 'btn';
+        editBtn.className = 'btn-back'; // Estilo unificado
+        editBtn.style.cursor = 'pointer';
         editBtn.innerHTML = '✏️ Editar Menú';
         
         editBtn.onclick = () => {
             isEditMode = !isEditMode;
             editBtn.innerHTML = isEditMode ? '✅ Listo' : '✏️ Editar Menú';
-            editBtn.classList.toggle('btn--success', isEditMode); // Asume que tienes o crearás esta clase
+            
+            if (isEditMode) {
+                editBtn.style.background = 'rgba(255, 209, 102, 0.2)';
+                editBtn.style.borderColor = 'var(--color-primary)';
+            } else {
+                editBtn.style.background = '';
+                editBtn.style.borderColor = '';
+            }
             renderTableContent();
         };
 
+        // Botón Restablecer
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'btn-back';
+        resetBtn.style.cursor = 'pointer';
+        resetBtn.innerHTML = '🔄 Restablecer';
+        resetBtn.onclick = () => {
+            if (confirm("¿Restablecer el menú original? Se perderán los cambios.")) {
+                localStorage.removeItem(APP_PREFIX + `menu_data_${currentFile}`);
+                if (isEditMode) {
+                    isEditMode = false;
+                    editBtn.innerHTML = '✏️ Editar Menú';
+                    editBtn.style.background = '';
+                    editBtn.style.borderColor = '';
+                }
+                loadMenuData(currentFile);
+            }
+        };
+
+        // Botón Modo Ancho
+        const wideBtn = document.createElement('button');
+        wideBtn.className = 'btn-back';
+        wideBtn.style.cursor = 'pointer';
+        wideBtn.innerHTML = '↔️ Ancho';
+        
+        let isWideMode = false;
+        wideBtn.onclick = () => {
+            isWideMode = !isWideMode;
+            if (isWideMode) {
+                container.classList.remove('layout-container');
+                wideBtn.innerHTML = '📱 Normal';
+                wideBtn.style.background = 'rgba(255, 209, 102, 0.2)';
+                wideBtn.style.borderColor = 'var(--color-primary)';
+            } else {
+                container.classList.add('layout-container');
+                wideBtn.innerHTML = '↔️ Ancho';
+                wideBtn.style.background = '';
+                wideBtn.style.borderColor = '';
+            }
+        };
+
         btnContainer.appendChild(editBtn);
-        container.appendChild(btnContainer);
+        btnContainer.appendChild(resetBtn);
+        btnContainer.appendChild(wideBtn);
+        container.after(btnContainer);
     }
 
     // Helper para generar HTML de totales (usado en render y update)
@@ -195,74 +232,136 @@ function renderMenuPage() {
 
         const currentData = window.MENU_DATA;
 
+        // Calcular índice del día actual (Lunes=0, ..., Domingo=6)
+        const todayIndex = (new Date().getDay() + 6) % 7;
+
+        // 0. Actualizar Cabecera (Días en columnas)
+        const table = tableBody.closest('table');
+        const thead = table.querySelector('thead');
+        if (thead) {
+            // Generar Selector
+            const options = AVAILABLE_MENUS.map(m => 
+                `<option value="${m.file}" ${m.file === currentFile ? 'selected' : ''}>${m.label}</option>`
+            ).join('');
+            const selectHtml = `<select id="menu-select" class="input-base input-select" style="width:100%; font-size:0.85rem; padding:4px 20px 4px 8px;">${options}</select>`;
+
+            let headerHtml = `<tr><th class="menu-row-header" style="padding: var(--space-xs);">${selectHtml}</th>`;
+            currentData.forEach((day, index) => {
+                const isToday = index === todayIndex;
+                const activeClass = isToday ? 'text-status--ok' : '';
+                headerHtml += `<th class="${activeClass}">${day.dia}</th>`;
+            });
+            headerHtml += '</tr>';
+            thead.innerHTML = headerHtml;
+
+            // Event Listener
+            const select = document.getElementById('menu-select');
+            if (select) {
+                select.addEventListener('change', (e) => {
+                    const newFile = e.target.value;
+                    currentFile = newFile;
+                    DB.save('selected_menu_file', newFile);
+                    loadMenuData(newFile);
+                });
+            }
+        }
+
         tableBody.innerHTML = "";
+        const meals = ['desayuno', 'comida', 'cena'];
+        const mealLabels = { 'desayuno': 'Desayuno', 'comida': 'Comida', 'cena': 'Cena' };
+
+        // Determinar comida activa según la hora
+        const currentHour = new Date().getHours();
+        let activeMeal = null;
+        if (currentHour >= 6 && currentHour < 12) activeMeal = 'desayuno';
+        else if (currentHour >= 12 && currentHour < 18) activeMeal = 'comida';
+        else if (currentHour >= 18) activeMeal = 'cena';
 
         try {
-        currentData.forEach((day, dayIndex) => {
-        const meals = ['desayuno', 'comida', 'cena'];
-        const dayTotals = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
-        const row = document.createElement("tr");
+            // 1. Filas de Comidas (Transpuesto)
+            meals.forEach(mealKey => {
+                const row = document.createElement("tr");
+                const isActive = mealKey === activeMeal;
+                const activeClass = isActive ? 'text-status--ok' : '';
+                let html = `<td class="menu-row-header ${activeClass}">${mealLabels[mealKey]}</td>`;
 
-        let html = `
-            <td class="menu-day-col">
-                <div>
-                    ${day.dia}
-                </div>
-            </td>`;
+                currentData.forEach((day, dayIndex) => {
+                    const mealData = day[mealKey];
+                    const nut = NUTRITION.calculateMeal(mealData.items);
 
-        // 1. Procesar cada comida
-        meals.forEach(mealKey => {
-            const mealData = day[mealKey];
-            const nut = NUTRITION.calculateMeal(mealData.items);
+                    html += `
+                        <td>
+                            <ul class="meal-list">
+                                ${mealData.items.map((i, itemIndex) => {
+                                    const f = FOODS[i.foodId];
+                                    let amountHtml;
+                                    if (isEditMode) {
+                                        amountHtml = `<input type="text" inputmode="decimal" value="${i.amount}" 
+                                            class="input-base input-base--table-edit" 
+                                            data-day="${dayIndex}" data-meal="${mealKey}" data-item="${itemIndex}">`;
+                                    } else {
+                                        amountHtml = `<span>${i.amount}</span>`;
+                                    }
+                                    return `<li class="meal-item">
+                                        <span class="meal-item__name food-info-trigger" data-food-id="${i.foodId}">${f ? f.name : i.foodId}</span>
+                                        <div class="meal-item__amount">
+                                            ${amountHtml}
+                                            <span class="meal-item__unit">${f ? f.unit : ''}</span>
+                                        </div>
+                                    </li>`;
+                                }).join('')}
+                            </ul>
+                            <div class="meal-macros" id="macros-${dayIndex}-${mealKey}">
+                                <span class="text-primary">${Math.round(nut.kcal)} kcal</span> |
+                                P: ${Math.round(nut.protein)} | C: ${Math.round(nut.carbs)} | G: ${Math.round(nut.fat)}
+                            </div>
+                            <div class="meal-description">
+                                ${mealData.description || ''}
+                            </div>
+                        </td>`;
+                });
+                row.innerHTML = html;
+                tableBody.appendChild(row);
+            });
 
-            dayTotals.kcal += nut.kcal;
-            dayTotals.protein += nut.protein;
-            dayTotals.carbs += nut.carbs;
-            dayTotals.fat += nut.fat;
+            // 2. Fila de Totales
+            const totalsRow = document.createElement("tr");
+            let totalsHtml = `<td class="menu-row-header">Totales</td>`;
+            
+            currentData.forEach((day, dayIndex) => {
+                const dayTotals = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+                meals.forEach(mk => {
+                    const n = NUTRITION.calculateMeal(day[mk].items);
+                    dayTotals.kcal += n.kcal;
+                    dayTotals.protein += n.protein;
+                    dayTotals.carbs += n.carbs;
+                    dayTotals.fat += n.fat;
+                });
+                
+                const target = storedTargets[day.dia];
+                totalsHtml += `
+                    <td class="day-total" id="day-totals-${dayIndex}">
+                        ${generateTotalsHtml(dayTotals, target)}
+                    </td>`;
+            });
+            totalsRow.innerHTML = totalsHtml;
+            tableBody.appendChild(totalsRow);
 
-            html += `
-                <td>
-                    <ul class="meal-list">
-                        ${mealData.items.map((i, itemIndex) => {
-                            const f = FOODS[i.foodId];
-                            let amountHtml;
-                            if (isEditMode) {
-                                amountHtml = `<input type="text" inputmode="decimal" value="${i.amount}" 
-                                    class="input-base input-base--table-edit" 
-                                    data-day="${dayIndex}" data-meal="${mealKey}" data-item="${itemIndex}">`;
-                            } else {
-                                amountHtml = `<span>${i.amount}</span>`;
-                            }
-                            return `<li class="meal-item">
-                                <span class="meal-item__name food-info-trigger" data-food-id="${i.foodId}">${f ? f.name : i.foodId}</span>
-                                <div class="meal-item__amount">
-                                    ${amountHtml}
-                                    <span class="meal-item__unit">${f ? f.unit : ''}</span>
-                                </div>
-                            </li>`;
-                        }).join('')}
-                    </ul>
-                    <div class="meal-macros" id="macros-${dayIndex}-${mealKey}">
-                        <span class="text-primary">${Math.round(nut.kcal)} kcal</span> |
-                        P: ${Math.round(nut.protein)} | C: ${Math.round(nut.carbs)} | G: ${Math.round(nut.fat)}
-                    </div>
-                    <div class="meal-description">
-                        ${mealData.description || ''}
-                    </div>
-                </td>`;
-        });
+            // 3. Scroll automático al día actual
+            setTimeout(() => {
+                if (table && table.parentElement) {
+                    const scroller = table.parentElement;
+                    // +1 porque la primera columna es el encabezado de fila
+                    const targetTh = table.querySelectorAll('thead th')[todayIndex + 1];
+                    
+                    if (targetTh) {
+                        // Ajuste de centrado: +30px para desplazar la columna ligeramente a la izquierda
+                        const scrollLeft = targetTh.offsetLeft - (scroller.clientWidth / 2) + (targetTh.clientWidth / 2) + 30;
+                        scroller.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+                    }
+                }
+            }, 100);
 
-        // 2. Lógica de Totales
-        const target = storedTargets[day.dia];
-
-        html += `
-            <td class="day-total" id="day-totals-${dayIndex}">
-                ${generateTotalsHtml(dayTotals, target)}
-            </td>`;
-
-        row.innerHTML = html;
-        tableBody.appendChild(row);
-    });
         } catch (error) {
             console.error("Error renderizando el menú:", error);
             tableBody.innerHTML = `<tr><td colspan="3" class="text-status--danger text-center p-lg">Error cargando los datos: ${error.message}</td></tr>`;

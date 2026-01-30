@@ -25,7 +25,7 @@ function renderControlPage() {
 
             row.innerHTML = `
                 <span class="row-item__title">Semana ${s}</span>
-                <input type="number" step="0.1" class="row-item__input" 
+                <input type="number" step="0.1" class="input-metric" 
                        value="${weightData[weekId] || ''}" placeholder="0.0">
             `;
 

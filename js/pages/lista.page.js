@@ -6,6 +6,9 @@ function renderShoppingListPage() {
     const container = document.getElementById('lista-container');
     if (!container) return;
 
+    // Limitar ancho igual que las otras páginas
+    container.classList.add('layout-container');
+
     // --- 1. Carga Dinámica de Datos (Menú y Alimentos) ---
     // Detectamos si estamos en /views/ o en root para la ruta del script
     const isInViews = window.location.pathname.includes('/views/');

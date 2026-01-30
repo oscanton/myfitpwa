@@ -235,13 +235,28 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 1rem;
 }
 
-/* Input específico para filas (Legacy support actualizado) */
+/* Input específico para métricas (Peso, Edad, Altura) */
+.input-metric,
 .row-item__input {
-    /* Hereda estilos base pero fuerza ancho pequeño */
-    composes: input-base;
-    width: 60px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--ui-radius-sm);
+    color: var(--color-text-main);
+    padding: 8px 4px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: normal;
     text-align: center;
-    font-weight: bold;
+    width: 80px;
+    transition: all 0.2s ease;
+}
+
+.input-metric:focus,
+.row-item__input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.1);
 }
 
 /* Etiqueta pequeña para inputs verticales (ej. Ajustes Calculadora) */
@@ -279,29 +294,48 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .menu-table th,
-.menu-table td,
-.menu-day-col {
+.menu-table td {
     padding: var(--space-md);
     border-bottom: 1px solid rgba(255,255,255,0.1);
     text-align: left;
     vertical-align: top;
 }
 
-.menu-day-col {
+.menu-table .menu-row-header {
     color: var(--color-primary);
-    font-size: 1.5rem;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    min-width: 220px;
+    font-size: 1rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    min-width: 110px;
+    vertical-align: middle;
+    
+    /* Sticky Column */
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: #203a43; /* Color sólido para ocultar el scroll */
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.menu-table .menu-row-header.text-status--ok {
+    font-weight: bold;
 }
 
 .menu-table th {
     color: var(--color-primary);
-    font-size: 1.5rem;
-    min-width: 120px;
+    font-size: 1.2rem;
+    min-width: 300px;
+    text-align: center;
+    font-weight: normal;
+}
+
+.menu-table th.text-status--ok {
+    font-weight: bold;
 }
 
 .menu-table td {
-    min-width: 120px;
+    min-width: 300px;
 }
 
 .menu-table td:nth-child(even) { background: rgba(255,255,255,0.02); }
