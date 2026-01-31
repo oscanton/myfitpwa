@@ -3,30 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Peso | SaludApp</title>
+    <title>Controles | SaludApp</title>
     <link rel="stylesheet" href="../css/app.css">
     <link rel="stylesheet" href="../css/components.css">
-    <!-- Librería para gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
     <div class="layout-container">
         <a href="../index.html" class="btn-back">← Inicio</a>
-        <h1>Control de Peso</h1>
-
-        <!-- Listado de Meses (Se rellena vía JS) -->
-        <div id="months-container"></div>
-
-        <!-- Botón de borrado -->
-        <button class="btn btn--danger" onclick="DB.clearAll()">
-            🗑️ Borrar todos los datos
-        </button>
-
-        <!-- Gráfico -->
-        <div class="card chart-box">
-            <canvas id="weightChart"></canvas>
-        </div>
+        <h1>Controles</h1>
+        <div id="control-container"></div>
     </div>
 
     <!-- Scripts del Core -->
@@ -35,6 +21,8 @@
     
     <!-- Lógica específica -->
     <script src="../js/pages/control.page.js"></script>
-    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', renderControlPage);
+    </script>
 </body>
 </html>

@@ -21,45 +21,6 @@ function renderMenuPage() {
         container.classList.add('layout-container');
     }
 
-    // --- Helpers Locales ---
-    // NOTA: Idealmente, `calculateMeal` debería estar en un módulo central como `core/formulas.js`
-    // para ser reutilizado en otras partes de la aplicación.
-    const NUTRITION = {
-        calculateMeal: (items) => {
-            const total = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
-            if (!items || !Array.isArray(items)) return total;
-            
-            items.forEach(item => {
-                // Verificar que FOODS existe y el alimento también
-                if (typeof FOODS === 'undefined') {
-                    // Error logueado en renderTableContent para no saturar
-                    return;
-                }
-                const food = FOODS[item.foodId];
-                if (!food) {
-                    console.warn(`Alimento no encontrado: ${item.foodId}`);
-                    return;
-                }
-                
-                let ratio = 0;
-                if (food.nutritionPer100) {
-                    ratio = item.amount / 100;
-                    total.kcal += food.nutritionPer100.kcal * ratio;
-                    total.protein += food.nutritionPer100.protein * ratio;
-                    total.carbs += food.nutritionPer100.carbs * ratio;
-                    total.fat += food.nutritionPer100.fat * ratio;
-                } else if (food.nutritionPerUnit) {
-                    ratio = item.amount;
-                    total.kcal += food.nutritionPerUnit.kcal * ratio;
-                    total.protein += food.nutritionPerUnit.protein * ratio;
-                    total.carbs += food.nutritionPerUnit.carbs * ratio;
-                    total.fat += food.nutritionPerUnit.fat * ratio;
-                }
-            });
-            return total;
-        }
-    };
-
     const getStatusClass = (current, target) => {
         if (!target || target === 0) return '';
         const pct = (current / target) * 100;
@@ -109,10 +70,7 @@ function renderMenuPage() {
     if (container && !document.getElementById('menu-controls-container')) {
         const btnContainer = document.createElement('div');
         btnContainer.id = 'menu-controls-container';
-        btnContainer.className = 'text-center mt-lg';
-        btnContainer.style.display = 'flex';
-        btnContainer.style.justifyContent = 'center';
-        btnContainer.style.gap = '12px';
+        btnContainer.className = 'menu-controls';
         
         // Botón Editar
         const editBtn = document.createElement('button');
@@ -124,14 +82,7 @@ function renderMenuPage() {
         editBtn.onclick = () => {
             isEditMode = !isEditMode;
             editBtn.innerHTML = isEditMode ? '✅ Listo' : '✏️ Editar';
-            
-            if (isEditMode) {
-                editBtn.style.background = 'rgba(255, 209, 102, 0.2)';
-                editBtn.style.borderColor = 'var(--color-primary)';
-            } else {
-                editBtn.style.background = '';
-                editBtn.style.borderColor = '';
-            }
+            editBtn.classList.toggle('btn-back--active', isEditMode);
             renderTableContent();
         };
 
@@ -146,8 +97,7 @@ function renderMenuPage() {
                 if (isEditMode) {
                     isEditMode = false;
                     editBtn.innerHTML = '✏️ Editar';
-                    editBtn.style.background = '';
-                    editBtn.style.borderColor = '';
+                    editBtn.classList.remove('btn-back--active');
                 }
                 loadMenuData(currentFile);
             }
@@ -162,16 +112,13 @@ function renderMenuPage() {
         let isWideMode = false;
         wideBtn.onclick = () => {
             isWideMode = !isWideMode;
+            wideBtn.classList.toggle('btn-back--active', isWideMode);
             if (isWideMode) {
                 container.classList.remove('layout-container');
                 wideBtn.innerHTML = '📱 Normal';
-                wideBtn.style.background = 'rgba(255, 209, 102, 0.2)';
-                wideBtn.style.borderColor = 'var(--color-primary)';
             } else {
                 container.classList.add('layout-container');
                 wideBtn.innerHTML = '↔️ Ancho';
-                wideBtn.style.background = '';
-                wideBtn.style.borderColor = '';
             }
         };
 
@@ -221,7 +168,7 @@ function renderMenuPage() {
         // Asegurar que MENU_DATA existe
         if (typeof window.MENU_DATA === 'undefined') {
             console.error("Error: MENU_DATA no está definido.");
-            tableBody.innerHTML = `<tr><td colspan="3" style="color:var(--color-danger)">Error: MENU_DATA no disponible.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="3" class="text-status--danger">Error: MENU_DATA no disponible.</td></tr>`;
             return;
         }
 
@@ -242,11 +189,7 @@ function renderMenuPage() {
             // Mover Selector al H1
             const h1 = document.querySelector('h1');
             if (h1) {
-                // Flexbox para alineación vertical centrada
-                h1.style.display = 'flex';
-                h1.style.justifyContent = 'center';
-                h1.style.alignItems = 'center';
-                h1.style.gap = '12px';
+                h1.classList.add('header-with-controls');
 
                 let selectWrapper = document.getElementById('menu-select-wrapper');
                 if (!selectWrapper) {
@@ -260,7 +203,7 @@ function renderMenuPage() {
                 ).join('');
                 
                 // Estilo ajustado para estar inline en el título
-                selectWrapper.innerHTML = `<select id="menu-select" class="input-base input-select" style="width:auto; font-size:0.5em; padding:4px 24px 4px 8px;">${options}</select>`;
+                selectWrapper.innerHTML = `<select id="menu-select" class="input-base input-select input-select--header">${options}</select>`;
 
                 // Event Listener
                 const select = document.getElementById('menu-select');
@@ -297,7 +240,7 @@ function renderMenuPage() {
         else if (currentHour >= 18) activeMeal = 'cena';
 
         try {
-            // 1. Filas de Comidas (Transpuesto)
+            // 1. Filas de Comidas
             meals.forEach(mealKey => {
                 const row = document.createElement("tr");
                 const isActive = mealKey === activeMeal;
@@ -306,7 +249,7 @@ function renderMenuPage() {
 
                 currentData.forEach((day, dayIndex) => {
                     const mealData = day[mealKey];
-                    const nut = NUTRITION.calculateMeal(mealData.items);
+                    const nut = Formulas.calculateMeal(mealData.items);
 
                     html += `
                         <td>
@@ -350,7 +293,7 @@ function renderMenuPage() {
             currentData.forEach((day, dayIndex) => {
                 const dayTotals = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
                 meals.forEach(mk => {
-                    const n = NUTRITION.calculateMeal(day[mk].items);
+                    const n = Formulas.calculateMeal(day[mk].items);
                     dayTotals.kcal += n.kcal;
                     dayTotals.protein += n.protein;
                     dayTotals.carbs += n.carbs;
@@ -419,20 +362,20 @@ function renderMenuPage() {
             modal.className = 'modal-overlay';
             modal.innerHTML = `
                 <div class="modal-content">
-                    <h3 class="text-primary" style="margin-top:0">${food.name}</h3>
+                    <h3 class="text-primary modal-title">${food.name}</h3>
                     <div class="text-xs text-muted mb-sm">${label}</div>
                     
                     <div class="stats-pills stats-pills--center my-sm">
-                        <div class="stat-pill stat-pill--kcal" style="font-size:1.1rem">🔥 ${vals.kcal}</div>
+                        <div class="stat-pill stat-pill--kcal modal-stat-pill-lg">🔥 ${vals.kcal}</div>
                     </div>
 
-                    <div class="section-group__grid" style="grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:16px;">
-                        <div class="card-panel" style="padding:8px"><div class="text-xs text-muted">Prot</div><div class="text-lg">🥩 ${vals.protein}</div></div>
-                        <div class="card-panel" style="padding:8px"><div class="text-xs text-muted">Carb</div><div class="text-lg">🍚 ${vals.carbs}</div></div>
-                        <div class="card-panel" style="padding:8px"><div class="text-xs text-muted">Grasa</div><div class="text-lg">🥑 ${vals.fat}</div></div>
+                    <div class="modal-grid-3">
+                        <div class="card-panel modal-panel-sm"><div class="text-xs text-muted">Prot</div><div class="text-lg">🥩 ${vals.protein}</div></div>
+                        <div class="card-panel modal-panel-sm"><div class="text-xs text-muted">Carb</div><div class="text-lg">🍚 ${vals.carbs}</div></div>
+                        <div class="card-panel modal-panel-sm"><div class="text-xs text-muted">Grasa</div><div class="text-lg">🥑 ${vals.fat}</div></div>
                     </div>
 
-                    <button class="btn btn--primary" style="margin-bottom:0; padding:10px">Cerrar</button>
+                    <button class="btn btn--primary modal-btn-close">Cerrar</button>
                 </div>
             `;
             
@@ -458,7 +401,7 @@ function renderMenuPage() {
 
                 // Recalcular Macros de la Comida (Feedback visual inmediato)
                 const mealItems = window.MENU_DATA[dayIndex][mealKey].items;
-                const mealNut = NUTRITION.calculateMeal(mealItems);
+                const mealNut = Formulas.calculateMeal(mealItems);
                 const mealMacroDiv = document.getElementById(`macros-${dayIndex}-${mealKey}`);
                 if (mealMacroDiv) {
                     mealMacroDiv.innerHTML = `
@@ -471,7 +414,7 @@ function renderMenuPage() {
                 const dayData = window.MENU_DATA[dayIndex];
                 const dayTotals = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
                 ['desayuno', 'comida', 'cena'].forEach(mk => {
-                    const n = NUTRITION.calculateMeal(dayData[mk].items);
+                    const n = Formulas.calculateMeal(dayData[mk].items);
                     dayTotals.kcal += n.kcal;
                     dayTotals.protein += n.protein;
                     dayTotals.carbs += n.carbs;
@@ -489,7 +432,34 @@ function renderMenuPage() {
         }
     });
 
-    // --- 3. Carga Dinámica del Script ---
-    // Carga inicial
-    loadMenuData(currentFile);
+    // --- 3. Carga Dinámica de Dependencias ---
+    const loadDependencies = () => {
+        const isInViews = window.location.pathname.includes('/views/');
+        const corePath = isInViews ? '../js/core/' : 'js/core/';
+        const dataPath = isInViews ? '../js/data/' : 'js/data/';
+        const ts = Date.now();
+
+        const loadScript = (src) => new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = () => reject(src);
+            document.body.appendChild(s);
+        });
+
+        const promises = [];
+        // Cargar Formulas si falta
+        if (typeof Formulas === 'undefined') promises.push(loadScript(`${corePath}formulas.js?v=${ts}`));
+        // Cargar FOODS si falta (necesario para cálculos y nombres)
+        if (typeof FOODS === 'undefined') promises.push(loadScript(`${dataPath}foods.js?v=${ts}`));
+
+        Promise.all(promises)
+            .then(() => loadMenuData(currentFile))
+            .catch(err => {
+                console.error("Error loading dependencies:", err);
+                tableBody.innerHTML = `<tr><td colspan="3" class="text-status--danger text-center">Error crítico: No se pudieron cargar las dependencias (foods/formulas).</td></tr>`;
+            });
+    };
+
+    loadDependencies();
 }

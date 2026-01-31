@@ -5,20 +5,40 @@
 :root {
     /* --- 1. Paleta Base --- */
     --color-bg-gradient: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+    --color-bg-sticky:   #203a43; /* Fondo sólido para elementos fijos */
     --color-text-main:   #ffffff;
     --color-text-muted:  rgba(255, 255, 255, 0.7);
+    --color-text-inverse: #1a1a1a; /* Texto oscuro sobre colores brillantes */
     
     /* --- 2. Colores de Acento --- */
-    --color-primary:   #ffd166; /* Amarillo */
-    --color-danger:    #ef476f; /* Rojo/Rosa */
-    --color-success:   #4caf50; /* Verde */
-    --color-warning:   #ff9800; /* Naranja */
+    --color-primary-rgb: 255, 209, 102; /* #ffd166 */
+    --color-primary:     rgb(var(--color-primary-rgb));
+
+    --color-danger-rgb:  239, 71, 111;  /* #ef476f */
+    --color-danger:      rgb(var(--color-danger-rgb));
+
+    --color-success-rgb: 76, 175, 80;   /* #4caf50 */
+    --color-success:     rgb(var(--color-success-rgb));
+
+    --color-warning-rgb: 255, 152, 0;   /* #ff9800 */
+    --color-warning:     rgb(var(--color-warning-rgb));
+
+    --color-info-rgb:    79, 195, 247;  /* #4fc3f7 */
+    --color-info:        rgb(var(--color-info-rgb));
+
+    --color-critical-rgb: 183, 28, 28;  /* #b71c1c */
+    --color-critical:     rgb(var(--color-critical-rgb));
 
     /* --- 3. UI: Fondos Glassmorphism --- */
     /* Usamos niveles de opacidad para jerarquía */
     --glass-light: rgba(255, 255, 255, 0.1);  /* Contenedores principales */
     --glass-medium: rgba(255, 255, 255, 0.06); /* Celdas impares */
     --glass-dark:  rgba(0, 0, 0, 0.25);       /* Fondos oscuros/contrastes */
+    --glass-faint: rgba(255, 255, 255, 0.03); /* Fondos muy sutiles */
+
+    /* Bordes */
+    --border-light: rgba(255, 255, 255, 0.1);
+    --border-faint: rgba(255, 255, 255, 0.05);
     
     /* --- 4. UI: Elementos Semánticos --- */
     --ui-radius-lg: 18px;

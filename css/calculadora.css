@@ -15,33 +15,13 @@
     align-items: stretch;
     gap: 6px;
 }
-/* Filas de detalle diario */
-.calc-day-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.calc-day-row__header { text-align: left; }
-.calc-day-row__data { text-align: right; }
-
-.calc-day-row__activity-label {
-    font-size: 0.75rem;
-    opacity: 0.8;
-    margin-top: 2px;
-}
-.calc-day-row__macros {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    margin-top: 2px;
-}
 
 /* Paleta de Colores Semántica */
-.color-blue { color: #4fc3f7; }
+.color-blue { color: var(--color-info); }
 .color-success { color: var(--color-success); }
 .color-warning { color: var(--color-warning); }
 .color-danger { color: var(--color-danger); }
-.color-critical { color: #b71c1c; }
+.color-critical { color: var(--color-critical); }
 
 /* Píldoras de estadísticas */
 .stats-pills {
@@ -85,7 +65,7 @@
     display: flex;
     flex-direction: column;
     background: var(--glass-medium);
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid var(--border-faint);
     border-radius: 12px;
     text-align: center;
     overflow: hidden; /* Para que los hijos no se salgan del border-radius */
@@ -106,7 +86,7 @@
 .adj-data-cell {
     padding: 8px 4px;
     font-size: 0.9rem;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid var(--border-faint);
     height: 48px;
     display: flex;
     align-items: center;

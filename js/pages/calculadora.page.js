@@ -6,6 +6,31 @@ function renderCalculatorPage() {
     const container = document.getElementById('calculadora-container');
     if (!container) return;
 
+    // --- Carga Dinámica de Dependencias (Formulas) ---
+    if (typeof Formulas === 'undefined') {
+        const isInViews = window.location.pathname.includes('/views/');
+        const corePath = isInViews ? '../js/core/' : 'js/core/';
+        const script = document.createElement('script');
+        script.src = `${corePath}formulas.js?v=${Date.now()}`;
+        script.onload = () => initCalculator(container);
+        script.onerror = () => {
+            container.innerHTML = `<div class="card"><p class="text-status--danger">Error cargando formulas.js</p></div>`;
+        };
+        document.body.appendChild(script);
+    } else {
+        initCalculator(container);
+    }
+}
+
+function initCalculator(container) {
+    // Helper para formatear nombre de actividad (Fallback si no hay catálogo)
+    const formatActivity = (key) => {
+        if (typeof ACTIVITY_CATALOG !== 'undefined' && ACTIVITY_CATALOG[key]) {
+            return ACTIVITY_CATALOG[key].label;
+        }
+        return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    };
+
     // 1. Cargar datos (o defaults)
     const userProfile = DB.get('user_profile', {
         sex: 'hombre', age: 30, height: 175, weight: 75
@@ -92,14 +117,11 @@ function renderCalculatorPage() {
                     <div class="adj-col-header">${field.label}</div>
                     <div class="adj-data-cell" id="adj-base-${field.key}">-</div>
                     <div class="adj-data-cell">
-                        <select id="${field.id}" class="input-select input-minimal">${generateOpts(adjustments[field.key])}</select>
+                        <select id="${field.id}" class="input-base input-select input-select--sm">${generateOpts(adjustments[field.key])}</select>
                     </div>
                     <div class="adj-data-cell adj-data-cell--highlight" id="adj-obj-${field.key}">-</div>
                 </div>
             `).join('')}
-        </div>
-        <div class="text-note">
-            * Base calculada sobre Reposo (Sedentario)
         </div>
     `;
     container.appendChild(adjustmentsCard);
@@ -226,7 +248,7 @@ function renderCalculatorPage() {
             dayCard.innerHTML = `
                 <div class="w-100" style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="row-item__title">${day}</div>
-                    <div class="row-item__subtitle" style="margin-top: 0;">${(ACTIVITY_CATALOG[activityKey] || {}).label || activityKey}</div>
+                    <div class="row-item__subtitle" style="margin-top: 0;">${formatActivity(activityKey)}</div>
                 </div>
                 ${renderMacroPills(dayVals)}
             `;

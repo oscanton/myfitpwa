@@ -6,6 +6,35 @@ function renderActivityPage() {
     const container = document.getElementById('actividad-container');
     if (!container) return;
     
+    // --- Carga Dinámica de Dependencias ---
+    const loadDependencies = () => {
+        const isInViews = window.location.pathname.includes('/views/');
+        const corePath = isInViews ? '../js/core/' : 'js/core/';
+        const dataPath = isInViews ? '../js/data/' : 'js/data/';
+        const ts = Date.now();
+
+        const loadScript = (src) => new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = () => reject(src);
+            document.body.appendChild(s);
+        });
+
+        const promises = [];
+        if (typeof Formulas === 'undefined') promises.push(loadScript(`${corePath}formulas.js?v=${ts}`));
+        if (typeof RUTINAS === 'undefined') promises.push(loadScript(`${dataPath}rutinas.js?v=${ts}`));
+
+        Promise.all(promises)
+            .then(() => initActivityPage(container))
+            .catch(err => {
+                container.innerHTML = `<div class="card"><p class="text-status--danger">Error cargando dependencias (formulas/rutinas).</p></div>`;
+            });
+    };
+    loadDependencies();
+}
+
+function initActivityPage(container) {
     container.innerHTML = '';
     
     // Calcular índice del día actual (Lunes=0, ..., Domingo=6)
@@ -112,8 +141,8 @@ function updateActivity(dayIndex, type) {
     
     if (contentDiv) {
         // Pequeño feedback visual
-        contentDiv.style.opacity = '0.5';
-        setTimeout(() => contentDiv.style.opacity = '1', 200);
+        contentDiv.classList.add('opacity-pulse');
+        setTimeout(() => contentDiv.classList.remove('opacity-pulse'), 200);
 
         contentDiv.innerHTML = generateRoutineContent(type);
     }

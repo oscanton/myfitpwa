@@ -12,7 +12,7 @@
     background: var(--glass-light);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
     border-radius: var(--ui-radius-lg);
     box-shadow: var(--ui-shadow);
 }
@@ -29,7 +29,7 @@
     background: var(--glass-dark);
     border-radius: var(--ui-radius-sm);
     padding: var(--space-md);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-faint);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -37,17 +37,18 @@
     text-align: center;
 }
 
-.chart-box {
-    background: rgba(255, 255, 255, 0.03); /* Override ligero */
-    padding: var(--space-md);
-    margin: var(--space-lg) 0;
-    height: 300px;
-    position: relative;
-}
 
 .section-group {
     padding: var(--space-md);
     margin-bottom: var(--space-lg);
+}
+
+.chart-box {
+    padding: var(--space-md);
+    margin: var(--space-lg) 0;
+    height: 300px;
+    position: relative;
+    width: 100%;
 }
 
 .section-group__grid {
@@ -82,23 +83,8 @@
 
 .btn--primary {
     background: var(--ui-highlight-gradient);
-    color: #1a1a1a;
-    box-shadow: 0 4px 15px rgba(255, 209, 102, 0.3);
-}
-
-.btn--danger {
-    background: linear-gradient(135deg, #ff5f6d, #ffc371);
-    color: #fff;
-    margin-top: var(--space-xl);
-}
-
-.btn--link {
-    display: inline-block;
-    width: auto;
-    padding: var(--space-xs) 0;
-    margin-bottom: var(--space-lg);
-    color: var(--color-primary);
-    font-size: 0.9rem;
+    color: var(--color-text-inverse);
+    box-shadow: 0 4px 15px rgba(var(--color-primary-rgb), 0.3);
 }
 
 /* Botón Volver Unificado */
@@ -109,10 +95,10 @@
     padding: 8px 16px;
     margin-bottom: var(--space-lg);
     
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-light);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--border-light);
     border-radius: 20px;
     
     color: var(--color-text-main);
@@ -132,6 +118,11 @@
     transform: scale(0.96);
 }
 
+.btn-back--active {
+    background: rgba(var(--color-primary-rgb), 0.2);
+    border-color: var(--color-primary);
+}
+
 /* --- 4. LISTAS & FILAS (Rows) --- */
 
 .row-item {
@@ -148,11 +139,11 @@
 
 .row-item--active {
     background: var(--ui-highlight-gradient);
-    color: #000;
+    color: var(--color-text-inverse);
 }
 
-.row-item--active .row-item__subtitle { opacity: 0.8; color: #000; }
-.row-item--active input { color: #000; border-color: rgba(0,0,0,0.2); }
+.row-item--active .row-item__subtitle { opacity: 0.8; color: var(--color-text-inverse); }
+.row-item--active input { color: var(--color-text-inverse); border-color: rgba(0,0,0,0.2); }
 
 .row-item__info {
     display: flex;
@@ -166,20 +157,29 @@
 /* --- INPUTS & SELECTS UNIFICADOS --- */
 
 .input-base {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2); /* Mantener oscuro específico para inputs */
+    border: 1px solid var(--border-light);
     border-radius: var(--ui-radius-sm);
     color: var(--color-text-main);
-    padding: 8px 12px;
+    padding: 10px 12px;
     font-family: inherit;
     font-size: 0.95rem;
-    transition: border-color 0.2s, background 0.2s;
+    line-height: 1.5;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+/* Hover state para feedback */
+.input-base:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .input-base:focus {
     outline: none;
     border-color: var(--color-primary);
     background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
 }
 
 /* Estilo consistente para spinners en inputs numéricos */
@@ -194,52 +194,33 @@ input[type=number]::-webkit-outer-spin-button {
     appearance: none;
     -webkit-appearance: none;
     cursor: pointer;
-    padding-right: 32px; /* Espacio para la flecha */
+    padding-right: 36px; /* Espacio para la flecha */
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 14px;
+    background-position: right 12px center;
+    background-size: 16px;
 }
 
 .input-select option {
-    background-color: #203a43;
+    background-color: var(--color-bg-sticky);
     color: #fff;
+    padding: 8px;
 }
 
-/* Variante: Select Minimalista (para tablas/grids densos) */
-.input-minimal {
-    background-color: transparent;
-    border: none;
-    padding: 0 18px 0 4px; /* Espacio a la derecha para flecha */
-    height: 100%;
-    width: 100%;
-    text-align: center;
-    text-align-last: center;
-    font-size: 0.9rem;
-    color: inherit;
-    background-position: right 0 center; /* Ajuste de flecha */
-}
-.input-minimal:focus {
-    outline: none;
-    background-color: rgba(255,255,255,0.05);
-}
-
-/* Variante: Select Inline (para cabeceras) */
-.input-inline {
-    width: auto;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: var(--space-md);
-    padding: 6px 30px 6px 12px;
-    font-weight: normal;
-    font-size: 1rem;
+/* Variante: Select Pequeño (Ajustes / Tablas) */
+.input-select--sm {
+    padding: 6px 28px 6px 8px;
+    font-size: 0.85rem;
+    border-radius: var(--ui-radius-sm);
+    background-size: 14px;
+    background-position: right 8px center;
 }
 
 /* Input específico para métricas (Peso, Edad, Altura) */
 .input-metric,
 .row-item__input {
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
     border-radius: var(--ui-radius-sm);
     color: var(--color-text-main);
     padding: 8px 4px;
@@ -256,7 +237,7 @@ input[type=number]::-webkit-outer-spin-button {
     outline: none;
     border-color: var(--color-primary);
     background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.1);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.1);
 }
 
 /* Etiqueta pequeña para inputs verticales (ej. Ajustes Calculadora) */
@@ -277,15 +258,6 @@ input[type=number]::-webkit-outer-spin-button {
     position: relative; /* Para el botón de edición */
 }
 
-.table-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
-}
-
 .menu-table {
     width: 100%;
     min-width: 600px;
@@ -296,7 +268,7 @@ input[type=number]::-webkit-outer-spin-button {
 .menu-table th,
 .menu-table td {
     padding: var(--space-md);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid var(--border-light);
     text-align: left;
     vertical-align: top;
 }
@@ -306,7 +278,7 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 1rem;
     font-weight: normal;
     text-transform: uppercase;
-    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    border-right: 1px solid var(--border-light);
     min-width: 50px;
     vertical-align: middle;
     
@@ -314,7 +286,7 @@ input[type=number]::-webkit-outer-spin-button {
     position: sticky;
     left: 0;
     z-index: 10;
-    background: #203a43; /* Color sólido para ocultar el scroll */
+    background: var(--color-bg-sticky); /* Color sólido para ocultar el scroll */
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -324,7 +296,7 @@ input[type=number]::-webkit-outer-spin-button {
     text-align: center;
     /* Compensar la rotación para que el borde y la sombra sigan visualmente a la derecha */
     border-right: none;
-    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 1px solid var(--border-light);
     box-shadow: -4px 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -335,7 +307,7 @@ input[type=number]::-webkit-outer-spin-button {
 .menu-table th {
     color: var(--color-primary);
     font-size: 1.2rem;
-    min-width: 300px;
+    min-width: 320px;
     text-align: center;
     font-weight: normal;
 }
@@ -345,7 +317,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .menu-table td {
-    min-width: 300px;
+    min-width: 320px;
 }
 
 .menu-table td:nth-child(even) { background: rgba(255,255,255,0.02); }
@@ -389,7 +361,6 @@ input[type=number]::-webkit-outer-spin-button {
 
 .day-total {
     background: rgba(0, 0, 0, 0.25) !important;
-    border-radius: 8px;
     padding: 10px;
 }
 
@@ -399,7 +370,7 @@ input[type=number]::-webkit-outer-spin-button {
 .day-total__macros {
     font-family: monospace; 
     font-size: 0.8rem; 
-    border-top: 1px solid rgba(255,255,255,0.1); 
+    border-top: 1px solid var(--border-light); 
     padding-top: 6px; 
     line-height: 1.6;
 }
@@ -408,11 +379,6 @@ input[type=number]::-webkit-outer-spin-button {
 .input-base--table-edit {
     width: 65px; padding: 4px 2px; font-size: 0.9rem; text-align: right; display: inline-block;
 }
-
-/* Semáforo */
-.total-low { color: #ffffff !important; opacity: 0.7; }
-.total-ok { color: #4caf50 !important; text-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
-.total-high { color: #ff9800 !important; text-shadow: 0 0 10px rgba(255, 152, 0, 0.4); }
 
 /* --- 6. TARJETAS DE ACTIVIDAD --- */
 
@@ -427,7 +393,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 .activity-card--active {
     border-color: var(--color-primary);
-    box-shadow: 0 0 15px rgba(255, 209, 102, 0.15);
+    box-shadow: 0 0 15px rgba(var(--color-primary-rgb), 0.15);
 }
 
 .activity-header {
@@ -455,7 +421,7 @@ input[type=number]::-webkit-outer-spin-button {
     font-style: italic;
     margin-top: var(--space-sm);
     padding-top: var(--space-sm);
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid var(--border-light);
 }
 
 .activity-stats {
@@ -464,7 +430,7 @@ input[type=number]::-webkit-outer-spin-button {
     gap: 6px;
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid var(--border-light);
 }
 
 .stat-pill {
@@ -478,9 +444,9 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .stat-pill--kcal {
-    background: rgba(255, 209, 102, 0.2);
+    background: rgba(var(--color-primary-rgb), 0.2);
     color: var(--color-primary);
-    border: 1px solid rgba(255, 209, 102, 0.3);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.3);
 }
 
 /* --- 7. MODALS & POPUPS --- */
@@ -501,7 +467,7 @@ input[type=number]::-webkit-outer-spin-button {
     background: var(--glass-light);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-light);
     border-radius: var(--ui-radius-lg);
     padding: var(--space-lg);
     width: 90%;
@@ -510,6 +476,17 @@ input[type=number]::-webkit-outer-spin-button {
     text-align: center;
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+.modal-title { margin-top: 0; }
+.modal-stat-pill-lg { font-size: 1.1rem; }
+.modal-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.modal-panel-sm { padding: 8px; }
+.modal-btn-close { margin-bottom: 0; padding: 10px; }
 
 .food-info-trigger {
     cursor: pointer;
@@ -523,3 +500,48 @@ input[type=number]::-webkit-outer-spin-button {
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* --- 8. UTILIDADES JS (Refactor) --- */
+
+.header-with-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.input-select--header {
+    width: auto;
+    display: inline-block;
+    font-size: 0.9rem;
+    padding: 6px 32px 6px 12px;
+    margin-left: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    border-color: transparent;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.input-select--header:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-light);
+}
+
+.input-select--header:focus {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: var(--color-primary);
+}
+
+.menu-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: var(--space-lg);
+    text-align: center;
+}
+
+.opacity-pulse {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}

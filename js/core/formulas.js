@@ -52,5 +52,35 @@ const Formulas = {
             f: Math.round((kcal * r.f) / 9),
             pct: { p: Math.round(r.p * 100), c: Math.round(r.c * 100), f: Math.round(r.f * 100) }
         };
+    },
+
+    // Calcula los macros totales de una lista de items (usado en Menú)
+    calculateMeal: (items) => {
+        const total = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
+        if (!items || !Array.isArray(items)) return total;
+        
+        // Acceso seguro a FOODS global (soporte para variable global o window)
+        let foodsData = {};
+        if (typeof FOODS !== 'undefined') foodsData = FOODS;
+        else if (typeof window.FOODS !== 'undefined') foodsData = window.FOODS;
+
+        items.forEach(item => {
+            const food = foodsData[item.foodId];
+            if (!food) return;
+            
+            let ratio = 0;
+            // Prioridad: por 100g o por unidad
+            if (food.nutritionPer100) {
+                ratio = item.amount / 100;
+                Object.keys(total).forEach(k => total[k] += (food.nutritionPer100[k] || 0) * ratio);
+            } else if (food.nutritionPerUnit) {
+                ratio = item.amount;
+                Object.keys(total).forEach(k => total[k] += (food.nutritionPerUnit[k] || 0) * ratio);
+            }
+        });
+        return total;
     }
 };
+
+// Exponer globalmente para asegurar acceso desde otros scripts
+window.Formulas = Formulas;
